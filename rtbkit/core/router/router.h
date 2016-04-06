@@ -702,12 +702,12 @@ public:
         //cerr << "********* logging message to " << channel << endl;
         logger.publish(channel, Date::now().print(5), args...);
     }
-
-    /** Log a given message to analytics endpoint on given channel. */
+  
+  /** Log a given message to analytics endpoint on given channel. */
     template<typename... Args>
     void logMessageToAnalytics(const std::string & channel, Args... args)
-    {
-        analytics.publish(channel, Date::now().print(5), args...);
+  {
+      analytics.publish(channel, args...);
     }
 
     /** Log a given message to the given channel. */

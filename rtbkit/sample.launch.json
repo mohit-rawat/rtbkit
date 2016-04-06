@@ -63,7 +63,11 @@
                     "root": ".",
                     "path": "build/x86_64/bin/router_runner",
                     "arg": [
-                        "-B", "rtbkit/sample.bootstrap.json"
+			"--bidder", "rtbkit/http_bidder-config.json",
+                        "-B", "rtbkit/sample.bootstrap.json",
+                        "--log-bids", true,
+                        "--analytics",
+                        "--analytics-connections", "12"
                     ],
                     "log": true
                 },
@@ -72,9 +76,12 @@
                     "root": ".",
                     "path": "build/x86_64/bin/post_auction_runner",
                     "arg": [
-                        "-B", "rtbkit/sample.bootstrap.json",
+			"--bidder", "rtbkit/http_bidder-config.json",                    
+			"-B", "rtbkit/sample.bootstrap.json",
                         "--win-seconds", "3600.0", 
-                        "--auction-seconds", "900.0"
+                        "--auction-seconds", "900.0",
+			"--analytics",
+                        "--analytics-connections", "12"
                     ],
                     "log": true
                 },
