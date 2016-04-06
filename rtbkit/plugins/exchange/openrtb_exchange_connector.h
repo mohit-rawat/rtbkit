@@ -7,7 +7,8 @@
 #pragma once
 
 #include "rtbkit/plugins/exchange/http_exchange_connector.h"
-
+#include "aerospike/as_config.h"
+#include "aerospike/aerospike_key.h"
 namespace RTBKIT {
 
 /*****************************************************************************/
@@ -25,6 +26,9 @@ struct OpenRTBExchangeConnector : public HttpExchangeConnector {
     OpenRTBExchangeConnector(const std::string & name,
                              std::shared_ptr<ServiceProxies> proxies);
 
+	as_error err;
+	as_config config;
+	aerospike as;
     static std::string exchangeNameString() {
         return "openrtb";
     }
@@ -57,6 +61,10 @@ struct OpenRTBExchangeConnector : public HttpExchangeConnector {
                      const std::string & errorMessage) const;
 
     virtual std::string getBidSourceConfiguration() const;
+
+	void getAudienceId(std::shared_ptr<BidRequest> res);
+
+	void changeCountryCode(std::shared_ptr<BidRequest> res);
 
 private:
 

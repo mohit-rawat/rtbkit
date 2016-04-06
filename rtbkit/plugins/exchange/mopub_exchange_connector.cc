@@ -16,7 +16,7 @@
 #include <boost/any.hpp>
 #include <boost/lexical_cast.hpp>
 #include "jml/utils/file_functions.h"
-
+#include "rtbkit/plugins/exchange/openrtb_exchange_connector.h"
 #include "crypto++/blowfish.h"
 #include "crypto++/modes.h"
 #include "crypto++/filters.h"
@@ -317,6 +317,9 @@ parseBidRequest(HttpAuctionHandler & connection,
             LOG(mopubExchangeConnectorTrace) << "Mobile Rich Media Ad Interface Definition is not supported." << endl;
         }
     }
+
+	OpenRTBExchangeConnector::getAudienceId(res);
+	OpenRTBExchangeConnector::changeCountryCode(res);
    
     return res;
 }

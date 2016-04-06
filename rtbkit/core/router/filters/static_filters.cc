@@ -328,6 +328,12 @@ struct InitFilters
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::UrlFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::HostFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::LanguageFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::OperatingSystemFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::CarrierFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::DevicemakeFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::DevicemodelFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::AppidFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::SiteidFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::LocationFilter>();
 
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::ExchangePreFilter>();

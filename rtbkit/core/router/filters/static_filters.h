@@ -199,6 +199,171 @@ private:
     IncludeExcludeFilter<BaseFilter> impl;
 };
 
+/******************************************************************************/
+/* OPERATINGSYSTEM FILTER                                                     */
+/******************************************************************************/
+
+struct OperatingSystemFilter : public FilterBaseT<OperatingSystemFilter>
+{
+    static constexpr const char* name = "OperatingSystem";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.operatingSystemFilter);
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.device ==NULL){
+			state.narrowConfigs(impl.filter("noos"));
+		}else{
+			state.narrowConfigs(impl.filter(state.request.device->os.utf8String()));
+		}
+    }
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+
+/******************************************************************************/
+/* CARRIER FILTER                                                             */
+/******************************************************************************/
+
+struct CarrierFilter : public FilterBaseT<CarrierFilter>
+{
+    static constexpr const char* name = "Carrier";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.carrierFilter);
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.device ==NULL){
+			state.narrowConfigs(impl.filter("nocarrier"));
+		}else{
+			state.narrowConfigs(impl.filter(state.request.device->carrier.utf8String()));
+		}
+	}
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+
+/******************************************************************************/
+/* DEVICEMAKE FILTER                                                          */
+/******************************************************************************/
+
+struct DevicemakeFilter : public FilterBaseT<DevicemakeFilter>
+{
+    static constexpr const char* name = "Devicemake";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.devicemakeFilter);
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.device ==NULL){
+			state.narrowConfigs(impl.filter("nomake"));
+		}else{
+			state.narrowConfigs(impl.filter(state.request.device->make.utf8String()));
+		}
+    }
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+
+/******************************************************************************/
+/* DEVICEMODEL FILTER                                                         */
+/******************************************************************************/
+
+struct DevicemodelFilter : public FilterBaseT<DevicemodelFilter>
+{
+    static constexpr const char* name = "Devicemodel";
+    unsigned priority() const { return 12; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.devicemodelFilter);
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.device ==NULL){
+			state.narrowConfigs(impl.filter("nomodel"));
+		}else{
+			state.narrowConfigs(impl.filter(state.request.device->model.utf8String()));		
+		}
+	}
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+/******************************************************************************/
+/* APPID FILTER                                                               */
+/******************************************************************************/
+
+struct AppidFilter : public FilterBaseT<AppidFilter>
+{
+    static constexpr const char* name = "Appid";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.appidFilter);
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.app != NULL){
+			state.narrowConfigs(impl.filter(state.request.app->id.toString()));
+		}else if(state.request.site == NULL){
+			state.narrowConfigs(impl.filter("noapp"));
+		}
+	}
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+/******************************************************************************/
+/* SITEID FILTER                                                              */
+/******************************************************************************/
+
+struct SiteidFilter : public FilterBaseT<SiteidFilter>
+{
+    static constexpr const char* name = "Siteid";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.siteidFilter);
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.site != NULL){
+			state.narrowConfigs(impl.filter(state.request.site->id.toString()));
+		}else if(state.request.app == NULL){
+			state.narrowConfigs(impl.filter("nosite"));
+		}
+	}
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
 
 /******************************************************************************/
 /* LOCATION FILTER                                                            */

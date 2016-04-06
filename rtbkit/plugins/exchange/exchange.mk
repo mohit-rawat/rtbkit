@@ -9,7 +9,7 @@ LIBRTB_EXCHANGE_LINK := \
 
 $(eval $(call library,exchange,$(LIBRTB_EXCHANGE_SOURCES),$(LIBRTB_EXCHANGE_LINK)))
 
-$(eval $(call library,openrtb_exchange,openrtb_exchange_connector.cc,exchange bid_test_utils openrtb_bid_request))
+$(eval $(call library,openrtb_exchange,openrtb_exchange_connector.cc,exchange bid_test_utils aerospike openrtb_bid_request))
 $(eval $(call library,rubicon_exchange,rubicon_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,mopub_exchange,mopub_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,smaato_exchange,smaato_exchange_connector.cc,openrtb_exchange))

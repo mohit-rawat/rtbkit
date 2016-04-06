@@ -20,6 +20,56 @@ namespace RTBKIT {
 
 
 /******************************************************************************/
+/* VIDEO DURATION FILTER                                                      */
+/******************************************************************************/
+
+struct DurationFilter : public IterativeCreativeFilter<DurationFilter>
+{
+	static constexpr const char* name = "DurationFilter";
+	unsigned priority() const { return 10; }
+	bool filterCreative(FilterState &state, const AdSpot &spot,
+                        const AgentConfig &config, const Creative &creative) const
+		{
+			if (creative.providerConfig["mopub"]["mimetype"]=="video" && spot.video){
+				int duration = creative.providerConfig["mopub"]["duration"].asInt();
+				if(duration >= spot.video->minduration.val && duration <=spot.video->maxduration.val){
+						return true;
+					}else{return false;};
+			}else{return true;};
+		}
+};
+
+
+/******************************************************************************/
+/* VIDEO FILTER                                                               */
+/******************************************************************************/
+
+struct VideoFilter : public IterativeCreativeFilter<VideoFilter>
+{
+    static constexpr const char *name = "VideoFilter";
+    unsigned priority() const { return 10; }
+    bool filterCreative(FilterState &state, const AdSpot &spot,
+                        const AgentConfig &config, const Creative &creative) const{
+//		std::cerr<<"creativematrix-- : "<<state.creatives(impIndex).print()<<std::endl;
+        for (const auto& format : spot.formats){
+			std::cerr<<"format-- : "<<format.print()<<std::endl;
+		};
+		if(creative.providerConfig["mopub"]["mimetype"]=="video"){
+			std::cerr<<"checking"<<std::endl;
+			if(spot.video){
+				return true;
+			}else{return false;};	
+		}else if (creative.providerConfig["mopub"]["mimetype"]=="banner"){
+			if(spot.banner){
+				return true;	
+			}else{return false;}
+		}else{
+			return true;
+		}
+	} 		
+};
+
+/******************************************************************************/
 /* CREATIVE FORTMAT FILTER                                                    */
 /******************************************************************************/
 

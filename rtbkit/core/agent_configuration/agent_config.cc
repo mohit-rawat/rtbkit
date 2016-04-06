@@ -568,6 +568,18 @@ createFromJson(const Json::Value & json)
             newConfig.locationFilter.fromJson(*it, "locationFilter");
         else if (it.memberName() == "languageFilter")
             newConfig.languageFilter.fromJson(*it, "languageFilter");
+        else if (it.memberName() == "operatingSystemFilter")
+            newConfig.operatingSystemFilter.fromJson(*it, "operatingSystemFilter");
+        else if (it.memberName() == "carrierFilter")
+            newConfig.carrierFilter.fromJson(*it, "carrierFilter");
+        else if (it.memberName() == "devicemakeFilter")
+            newConfig.devicemakeFilter.fromJson(*it, "devicemakeFilter");
+        else if (it.memberName() == "devicemodelFilter")
+            newConfig.devicemodelFilter.fromJson(*it, "devicemodelFilter");
+        else if (it.memberName() == "appidFilter")
+            newConfig.appidFilter.fromJson(*it, "appidFilter");
+        else if (it.memberName() == "siteidFilter")
+            newConfig.siteidFilter.fromJson(*it, "siteidFilter");
         else if (it.memberName() == "exchangeFilter")
             newConfig.exchangeFilter.fromJson(*it, "exchangeFilter");
         else if (it.memberName() == "latLongDevFilter")
@@ -687,6 +699,15 @@ createFromJson(const Json::Value & json)
     if (newConfig.creatives.empty())
         throw Exception("can't configure a agent with no creatives");
 
+	if(json.isMember("appidFilter") && !(json.isMember("siteidFilter"))){
+		std::cerr<<"no sites needed"<<std::endl;
+		newConfig.siteidFilter.include = {"nositesneeded"};
+	};
+		if(json.isMember("siteidFilter") && !(json.isMember("appidFilter"))){
+		std::cerr<<"no apps needed"<<std::endl;
+		newConfig.appidFilter.include = {"noappsneeded"};
+	};
+
     return newConfig;
 }
 
@@ -736,6 +757,18 @@ toJson(bool includeCreatives) const
         result["locationFilter"] = locationFilter.toJson();
     if (!languageFilter.empty())
         result["languageFilter"] = languageFilter.toJson();
+    if (!operatingSystemFilter.empty())
+        result["operatingSystemFilter"] = operatingSystemFilter.toJson();
+    if (!carrierFilter.empty())
+        result["carrierFilter"] = carrierFilter.toJson();
+    if (!devicemakeFilter.empty())
+        result["devicemakeFilter"] = devicemakeFilter.toJson();
+    if (!devicemodelFilter.empty())
+        result["devicemodelFilter"] = devicemodelFilter.toJson();
+    if (!appidFilter.empty())
+        result["appidFilter"] = appidFilter.toJson();
+    if (!siteidFilter.empty())
+        result["siteidFilter"] = siteidFilter.toJson();
     if (!exchangeFilter.empty())
         result["exchangeFilter"] = exchangeFilter.toJson();
     if (!latLongDevFilter.empty())

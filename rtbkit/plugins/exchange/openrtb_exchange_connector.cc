@@ -17,7 +17,8 @@
 #include "jml/utils/file_functions.h"
 #include "jml/arch/info.h"
 #include "jml/utils/rng.h"
-
+#include "aerospike/as_config.h"
+#include "aerospike/aerospike_key.h"
 using namespace Datacratic;
 
 namespace Datacratic {
@@ -85,6 +86,11 @@ OpenRTBExchangeConnector::
 OpenRTBExchangeConnector(ServiceBase & owner, const std::string & name)
     : HttpExchangeConnector(name, owner)
 {
+		as_config_init(&config);
+		config.hosts[0].addr = "127.0.0.1";
+		config.hosts[0].port = 3000;
+		aerospike_init(&as, &config);
+		aerospike_connect(&as, &err);
 }
 
 OpenRTBExchangeConnector::
@@ -295,6 +301,132 @@ setSeatBid(Auction const & auction,
     b.price.val = getAmountIn<CPM>(resp.price.maxPrice);
 }
 
+  void
+  OpenRTBExchangeConnector::
+  getAudienceId(std::shared_ptr<BidRequest> res)
+  {
+	  std::string deviceid;
+	  std::string deviceidgroup;
+	  if(res->device!=NULL){
+		  if(!res->device->ifa.empty()){
+			  deviceid = res->device->ifa;
+			  deviceidgroup = "ifa";
+		  }
+		  else if(!res->device->didsha1.empty()){
+			  deviceid = res->device->didsha1;
+			  deviceidgroup = "didsha1";
+		  }
+		  else if(!res->device->didmd5.empty()){
+			  deviceid = res->device->didmd5;
+			  deviceidgroup = "didmd5";
+		  }
+		  else if(!res->device->dpidsha1.empty()){
+			  deviceid = res->device->dpidsha1;
+			  deviceidgroup = "dpidsha1";
+		  }
+		  else if(!res->device->dpidmd5.empty()){
+			  deviceid = res->device->dpidmd5;
+			  deviceidgroup = "dpidmd5";
+		  }
+		  else if(!res->device->macsha1.empty()){
+			  deviceid = res->device->macsha1;
+			  deviceidgroup = "macsha1";
+		  }
+		  else if(!res->device->macmd5.empty()){
+			  deviceid = res->device->macmd5;
+			  deviceidgroup = "macmd5";
+		  };
+	  }
+	  else if(res->user!=NULL){
+		  if(!res->user->id.toString().empty()){
+			  deviceid = res->user->id.toString();
+			  if(res->exchange == "mopub"){
+				  deviceidgroup = "mopubid";
+			  }
+			  else if(res->exchange == "smaato"){
+				  deviceidgroup = "smaatoid";
+			  };
+		  }
+		  else if(!res->user->buyeruid.toString().empty()){
+			  deviceid = res->user->buyeruid.toString();
+			  if(res->exchange == "mopub"){
+				  deviceidgroup = "mopubbuyerid";
+			  }
+			  else if(res->exchange == "smaato"){
+				  deviceidgroup = "smaatoid";
+			  };
+		  };
+	  }
+	  else{
+		  struct timeval now;
+		  gettimeofday (&now, NULL);
+		  auto t0 = now.tv_usec + (unsigned long long)now.tv_sec * 1000000;
+		  deviceid = "s_"+ to_string(t0);
+		  deviceidgroup  = "timeid";
+	  };
+
+
+	  if(deviceidgroup == "timeid"){
+		  res->ext["audience"] = deviceid;
+	  }else{
+
+		  as_record* p_rec = NULL;
+		  as_record_init(p_rec, 2);
+		  std::string abc;
+
+		  as_key key;
+		  as_key_init(&key, "test", deviceidgroup.c_str(), deviceid.c_str());
+		  int audienceid = 0;
+
+		  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
+			  as_operations ops;
+			  as_operations_inita(&ops, 2);
+			  as_operations_add_incr(&ops, "count", 1);
+			  as_operations_add_read(&ops, "count");
+
+			  as_record *rec;
+			  as_key counterkey;
+			  as_key_init(&counterkey, "test", "audienceidcounter", "counter");
+			  if (aerospike_key_operate(&as, &err, NULL, &counterkey, &ops, &rec) != AEROSPIKE_OK) {
+				  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
+			  }
+			  else {
+				  audienceid = as_record_get_int64(rec, "count", 0);
+			  };
+			  as_record rec_auid;
+			  as_record_inita(&rec_auid, 1);
+			  if(audienceid != 0){
+				  as_record_set_int64(&rec_auid, "audienceid", audienceid);
+				  aerospike_key_put(&as, &err, NULL, &key, &rec_auid);
+			  };
+
+		  }else{
+			  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
+			  int64_t temp = 1;
+			  audienceid = as_record_get_int64(p_rec, "audienceid", temp);
+		  }
+		  res->ext["audience"] = to_string(audienceid);
+	  }
+  }
+
+
+  void
+  OpenRTBExchangeConnector::
+  changeCountryCode(std::shared_ptr<BidRequest> res)
+  {
+	  as_key key;
+	  as_record* p_rec = NULL;
+	  as_key_init(&key, "test", "locationSet", res->location.countryCode.c_str());
+
+	  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
+		  std::cerr<<"key not correct"<<std::endl;
+		  res->location.countryCode = "/";
+	  }else{
+		  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
+		  res->location.countryCode = as_record_get_str(p_rec, "val");
+	  }
+  }
+
 } // namespace RTBKIT
 
 namespace {
@@ -306,4 +438,3 @@ namespace {
         }
     } atInit;
 }
-
