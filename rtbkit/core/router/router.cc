@@ -2164,7 +2164,7 @@ doBidImpl(const BidMessage &message, const std::vector<std::string> &originalMes
         if (logBids)
             // Send BID to logger
             logMessage("BID", agent, auctionId, bidsString, message.meta);
-        logMessageToAnalytics("BID", agent, auctionId, bidsString);
+        logMessageToAnalytics("BID", bidsString, *auctionInfo.auction->requestStr);
         ML::atomic_add(numNonEmptyBids, 1);
     }
     else if (numPassedBids > 0) {
@@ -2395,7 +2395,7 @@ onNewAuction(std::shared_ptr<Auction> auction)
     if (logAuctions)
         // Send AUCTION to logger
         logMessage("AUCTION", auction->id, auction->requestStr);
-    logMessageToAnalytics("AUCTION", auction->id);
+    logMessageToAnalytics("AUCTION", auction->requestStr);
 
     const BidRequest & request = *auction->request;
     int numFields = 0;
