@@ -376,6 +376,8 @@ setSeatBid(Auction const & auction,
 
 		  as_key key;
 		  as_key_init(&key, "test", deviceidgroup.c_str(), deviceid.c_str());
+		  std::cerr<<deviceidgroup<<std::endl;
+		  std::cerr<<deviceid<<std::endl;
 		  int audienceid = 0;
 
 		  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
