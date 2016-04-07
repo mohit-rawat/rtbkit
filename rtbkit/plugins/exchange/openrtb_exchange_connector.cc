@@ -337,7 +337,7 @@ setSeatBid(Auction const & auction,
 			  deviceidgroup = "macmd5";
 		  };
 	  }
-	  else if(res->user!=NULL){
+	  else if(deviceid.empty() && res->user!=NULL){
 		  if(!res->user->id.toString().empty()){
 			  deviceid = res->user->id.toString();
 			  if(res->exchange == "mopub"){
