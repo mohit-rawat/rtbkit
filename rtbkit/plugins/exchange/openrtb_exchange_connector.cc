@@ -353,7 +353,7 @@ setSeatBid(Auction const & auction,
 				  deviceidgroup = "mopubbuyerid";
 			  }
 			  else if(res->exchange == "smaato"){
-				  deviceidgroup = "smaatoid";
+				  deviceidgroup = "smaatobuyerid";
 			  };
 		  };
 	  }
