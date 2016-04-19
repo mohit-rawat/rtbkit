@@ -337,13 +337,15 @@ setSeatBid(Auction const & auction,
 			  deviceidgroup = "macmd5";
 		  };
 	  }
-	  else if(deviceid.empty() && res->user!=NULL){
+	  if(deviceid.empty() && res->user != NULL){
+	    std::cerr<<"check1============="<<std::endl;
 		  if(!res->user->id.toString().empty()){
 			  deviceid = res->user->id.toString();
 			  if(res->exchange == "mopub"){
 				  deviceidgroup = "mopubid";
 			  }
 			  else if(res->exchange == "smaato"){
+			    std::cerr<<"check1============="<<std::endl;
 				  deviceidgroup = "smaatoid";
 			  };
 		  }
@@ -357,7 +359,7 @@ setSeatBid(Auction const & auction,
 			  };
 		  };
 	  }
-	  else{
+	  if(deviceid.empty()){
 		  struct timeval now;
 		  gettimeofday (&now, NULL);
 		  auto t0 = now.tv_usec + (unsigned long long)now.tv_sec * 1000000;
@@ -376,8 +378,9 @@ setSeatBid(Auction const & auction,
 
 		  as_key key;
 		  as_key_init(&key, "test", deviceidgroup.c_str(), deviceid.c_str());
-		  std::cerr<<deviceidgroup<<std::endl;
-		  std::cerr<<deviceid<<std::endl;
+		  std::cerr<<"deviceidgrup : "<<deviceidgroup<<std::endl;
+		  std::cerr<<"deviceid : "<<deviceid<<std::endl;
+		  std::cerr<<"deviceid.empty() : "<<deviceid.empty()<<std::endl;
 		  int audienceid = 0;
 
 		  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
@@ -408,6 +411,7 @@ setSeatBid(Auction const & auction,
 			  audienceid = as_record_get_int64(p_rec, "audienceid", temp);
 		  }
 		  res->ext["audience"] = to_string(audienceid);
+		  std::cerr<<"audienceid"<<res->ext["audience"];
 	  }
   }
 
