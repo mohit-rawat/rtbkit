@@ -320,6 +320,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::changeCountryCode(res);
+	OpenRTBExchangeConnector::getExchangeName(res);
    
     return res;
 }

@@ -66,6 +66,8 @@ struct OpenRTBExchangeConnector : public HttpExchangeConnector {
 
 	void changeCountryCode(std::shared_ptr<BidRequest> res);
 
+	void getExchangeName(std::shared_ptr<BidRequest> res);
+
 private:
 
     virtual Json::Value
