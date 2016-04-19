@@ -337,7 +337,7 @@ setSeatBid(Auction const & auction,
 			  deviceidgroup = "macmd5";
 		  };
 	  }
-	  else if(deviceid.empty() && res->user!=NULL){
+	  if(deviceid.empty() && res->user!=NULL){
 		  if(!res->user->id.toString().empty()){
 			  deviceid = res->user->id.toString();
 			  if(res->exchange == "mopub"){
@@ -357,7 +357,7 @@ setSeatBid(Auction const & auction,
 			  };
 		  };
 	  }
-	  else{
+	  if(deviceid.empty()){
 		  struct timeval now;
 		  gettimeofday (&now, NULL);
 		  auto t0 = now.tv_usec + (unsigned long long)now.tv_sec * 1000000;
@@ -427,6 +427,12 @@ setSeatBid(Auction const & auction,
 		  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
 		  res->location.countryCode = as_record_get_str(p_rec, "val");
 	  }
+  }
+  void
+  OpenRTBExchangeConnector::
+  getExchangeName(std::shared_ptr<BidRequest> res)
+  {
+	  res->ext["exchange"] = res->exchange;
   }
 
 } // namespace RTBKIT

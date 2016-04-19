@@ -137,6 +137,8 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 
 	OpenRTBExchangeConnector::getAudienceId(result);
+	OpenRTBExchangeConnector::getExchangeName(result);
+
     return result;
 }
 
