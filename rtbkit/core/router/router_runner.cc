@@ -48,7 +48,7 @@ RouterRunner::
 RouterRunner() :
     exchangeConfigurationFile("rtbkit/examples/router-config.json"),
     bidderConfigurationFile("rtbkit/examples/bidder-config.json"),
-    lossSeconds(15.0),
+    lossSeconds(60.0),
     noPostAuctionLoop(false),
     noBidProb(false),
     logAuctions(false),

@@ -383,28 +383,35 @@ setSeatBid(Auction const & auction,
 		  int audienceid = 0;
 
 		  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
+		    std::cerr<<"check1"<<std::endl;
 			  as_operations ops;
 			  as_operations_inita(&ops, 2);
 			  as_operations_add_incr(&ops, "count", 1);
 			  as_operations_add_read(&ops, "count");
 
-			  as_record *rec;
+			  as_record *rec = NULL;
 			  as_key counterkey;
+			    std::cerr<<"check 1.1"<<std::endl;
 			  as_key_init(&counterkey, "test", "audienceidcounter", "counter");
+			    std::cerr<<"check 1.5"<<std::endl;
 			  if (aerospike_key_operate(&as, &err, NULL, &counterkey, &ops, &rec) != AEROSPIKE_OK) {
+			    std::cerr<<"check2"<<std::endl;
 				  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
 			  }
 			  else {
+			    std::cerr<<"check3"<<std::endl;
 				  audienceid = as_record_get_int64(rec, "count", 0);
 			  };
 			  as_record rec_auid;
 			  as_record_inita(&rec_auid, 1);
 			  if(audienceid != 0){
+			    std::cerr<<"check4"<<std::endl;
 				  as_record_set_int64(&rec_auid, "audienceid", audienceid);
 				  aerospike_key_put(&as, &err, NULL, &key, &rec_auid);
 			  };
 
 		  }else{
+		    std::cerr<<"check6"<<std::endl;
 			  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
 			  int64_t temp = 1;
 			  audienceid = as_record_get_int64(p_rec, "audienceid", temp);
