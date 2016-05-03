@@ -57,10 +57,13 @@ struct SmaatoExchangeConnector: public OpenRTBExchangeConnector {
 
     struct CreativeInfo {
       Id adid;                ///< ID for ad to be service if bid wins 
+	  std::set<std::string> cat;
       std::string adm;        ///< Actual XHTML ad markup
       std::string nurl;       ///< Win notice URL
       std::vector<std::string> adomain; ///< Advertiser Domain
       std::vector<std::string> mimeTypes; ///< MIME Types for this creative
+      std::set<int>  type;                            ///< Creative type Appendix 6.2
+      std::set<int>  attr;                            ///< Creative attributes Appendix 6.3
     };
 
     virtual ExchangeCompatibility
