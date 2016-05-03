@@ -123,6 +123,20 @@ parseBidRequest(HttpAuctionHandler & connection,
         throw;
     }
 
+    // per slot: blocked type and attribute;
+    std::vector<int> intv;
+    for (auto& spot: result->imp) {
+        for (const auto& t: spot.banner->btype) {
+            intv.push_back (t.val);
+        }
+        spot.restrictions.addInts("blockedTypes", intv);
+        intv.clear();
+        for (const auto& a: spot.banner->battr) {
+            intv.push_back (a.val);
+        }
+        spot.restrictions.addInts("blockedAttrs", intv);
+	}
+
     // Check if we want some reporting
     auto verbose = header.headers.find("x-openrtb-verbose");
     if(header.headers.end() != verbose) {
@@ -137,6 +151,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 
 	OpenRTBExchangeConnector::getAudienceId(result);
+	OpenRTBExchangeConnector::changeCountryCode(result);
 	OpenRTBExchangeConnector::getExchangeName(result);
 
     return result;
@@ -220,6 +235,9 @@ ExchangeConnector::ExchangeCompatibility
     getAttr(result, pconf, "adid", crinfo->adid, includeReasons);
     getAttr(result, pconf, "adomain", crinfo->adomain, includeReasons);
     getAttr(result, pconf, "mimeTypes", crinfo->mimeTypes, includeReasons);
+    getAttr(result, pconf, "cat", crinfo->cat, includeReasons);
+    getAttr(result, pconf, "type", crinfo->type, includeReasons);
+    getAttr(result, pconf, "attr", crinfo->attr, includeReasons);
     result.info = crinfo;
  
     return result;
@@ -231,9 +249,38 @@ ExchangeConnector::ExchangeCompatibility
             const AgentConfig & config,
             const void * info) const {
       const auto crinfo = reinterpret_cast<const CreativeInfo*>(info);
+//bcat
+	  const auto& blocked_categories = request.restrictions.get("bcat");
+	  std::cerr<<"request.bcat : "<<request.restrictions.get("bcat")<<std::endl;
+	  for (const auto& cat: crinfo->cat)
+		  if (blocked_categories.contains(cat)) {
+			  this->recordHit ("blockedCategory");
+			  return false;
+		  }
+//badv
+	  const auto& badv = request.restrictions.get("badv");
+	  for (const auto& adomain: crinfo->adomain)
+		  if (badv.contains(adomain)) {
+			  this->recordHit ("blockedAdvertiser");
+			  return false;
+		  }
 
       // now go through the spots.
+//btype and battr
       for (const auto& spot: request.imp) {
+        const auto& blocked_types = spot.restrictions.get("blockedTypes");
+        for (const auto& t: crinfo->type)
+            if (blocked_types.contains(t)) {
+                this->recordHit ("blockedType");
+                return false;
+            }
+        const auto& blocked_attr = spot.restrictions.get("blockedAttrs");
+        for (const auto& a: crinfo->attr)
+            if (blocked_attr.contains(a)) {
+                this->recordHit ("blockedAttr");
+                return false;
+            }
+
           //const auto& mime_types = spot.banner->mimes;
 	for (const auto& mimeType : spot.banner->mimes) { 
               if (std::find(crinfo->mimeTypes.begin(), crinfo->mimeTypes.end(), mimeType.type)
