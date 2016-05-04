@@ -375,7 +375,7 @@ setSeatBid(Auction const & auction,
 		  std::string abc;
 
 		  as_key key;
-		  as_key_init(&key, "test", deviceidgroup.c_str(), deviceid.c_str());
+		  as_key_init(&key, "audience", deviceidgroup.c_str(), deviceid.c_str());
 		  std::cerr<<deviceidgroup<<std::endl;
 		  std::cerr<<deviceid<<std::endl;
 		  int audienceid = 0;
@@ -388,7 +388,7 @@ setSeatBid(Auction const & auction,
 
 			  as_record *rec;
 			  as_key counterkey;
-			  as_key_init(&counterkey, "test", "audienceidcounter", "counter");
+			  as_key_init(&counterkey, "audience", "audienceidcounter", "counter");
 			  if (aerospike_key_operate(&as, &err, NULL, &counterkey, &ops, &rec) != AEROSPIKE_OK) {
 				  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
 			  }
