@@ -26,8 +26,8 @@
     // created which can be useful to write tests.
     // "carbon-uri": ["carbon1.kittens.org:2003", "carbonA.kittens.org:2003"],
 
-    "carbon-uri": ["localhost:2003"],
-    "analytics-uri": "http://192.168.1.20:37495",
+   // "carbon-uri": ["localhost:2003"],
+    "analytics-uri": "http://127.0.0.1:37495",
 
     // Port ranges that various services can use to listen for incoming
     // connections. These can be specified either as a single port or a range of

@@ -721,17 +721,17 @@ run()
             for (auto it = times.begin(); it != times.end();  ++it)
                 total += it->second.time;
 
-            cerr << "total of " << total << " microseconds and "
+	    /*            cerr << "total of " << total << " microseconds and "
                  << totalSleeps << " sleeps" << endl;
-
+	    */
             for (auto it = times.begin(); it != times.end();  ++it) {
-                cerr << ML::format("%-30s %8lld %10.0f %6.2f%% %8.2fus/call\n",
+	      /*                cerr << ML::format("%-30s %8lld %10.0f %6.2f%% %8.2fus/call\n",
                                    it->first.c_str(),
                                    (unsigned long long)it->second.count,
                                    it->second.time,
                                    100.0 * it->second.time / total,
                                    it->second.time / it->second.count);
-
+	      */
                 recordEvent(("routerLoop." + it->first).c_str(), ET_LEVEL,
                         1.0 * it->second.time / (now - last_check) / 1000000.0);
 
@@ -2164,7 +2164,7 @@ doBidImpl(const BidMessage &message, const std::vector<std::string> &originalMes
         if (logBids)
             // Send BID to logger
             logMessage("BID", agent, auctionId, bidsString, message.meta);
-        logMessageToAnalytics("BID", bidsString, *auctionInfo.auction->requestStr);
+        logMessageToAnalytics("BID", agent, bidsString, auctionInfo.auction->requestStr);
         ML::atomic_add(numNonEmptyBids, 1);
     }
     else if (numPassedBids > 0) {
@@ -2745,6 +2745,7 @@ submitToPostAuctionService(std::shared_ptr<Auction> auction,
                            Id adSpotId,
                            const Auction::Response & bid)
 {
+    std::cerr<<"called submittopal"<<std::endl;
 #if 0
     static std::mutex lock;
     std::unique_lock<std::mutex> guard(lock);
@@ -2778,6 +2779,7 @@ submitToPostAuctionService(std::shared_ptr<Auction> auction,
     if (auction.unique()) {
         auctionGraveyard.tryPush(auction);
     }
+    std::cerr<<"called submittopal"<<std::endl;
 }
 
 void

@@ -344,6 +344,7 @@ setSeatBid(Auction const & auction,
 				  deviceidgroup = "mopubid";
 			  }
 			  else if(res->exchange == "smaato"){
+			    std::cerr<<"check1============="<<std::endl;
 				  deviceidgroup = "smaatoid";
 			  };
 		  }
@@ -375,39 +376,58 @@ setSeatBid(Auction const & auction,
 		  std::string abc;
 
 		  as_key key;
+<<<<<<< HEAD
 		  as_key_init(&key, "audience", deviceidgroup.c_str(), deviceid.c_str());
 		  std::cerr<<deviceidgroup<<std::endl;
 		  std::cerr<<deviceid<<std::endl;
+=======
+		  as_key_init(&key, "test", deviceidgroup.c_str(), deviceid.c_str());
+		  std::cerr<<"deviceidgrup : "<<deviceidgroup<<std::endl;
+		  std::cerr<<"deviceid : "<<deviceid<<std::endl;
+		  std::cerr<<"deviceid.empty() : "<<deviceid.empty()<<std::endl;
+>>>>>>> 95674f6325331ff7acf3891ba5ce72c9e5514a15
 		  int audienceid = 0;
 
 		  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
+		    std::cerr<<"check1"<<std::endl;
 			  as_operations ops;
 			  as_operations_inita(&ops, 2);
 			  as_operations_add_incr(&ops, "count", 1);
 			  as_operations_add_read(&ops, "count");
 
-			  as_record *rec;
+			  as_record *rec = NULL;
 			  as_key counterkey;
+<<<<<<< HEAD
 			  as_key_init(&counterkey, "audience", "audienceidcounter", "counter");
+=======
+			    std::cerr<<"check 1.1"<<std::endl;
+			  as_key_init(&counterkey, "test", "audienceidcounter", "counter");
+			    std::cerr<<"check 1.5"<<std::endl;
+>>>>>>> 95674f6325331ff7acf3891ba5ce72c9e5514a15
 			  if (aerospike_key_operate(&as, &err, NULL, &counterkey, &ops, &rec) != AEROSPIKE_OK) {
+			    std::cerr<<"check2"<<std::endl;
 				  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
 			  }
 			  else {
+			    std::cerr<<"check3"<<std::endl;
 				  audienceid = as_record_get_int64(rec, "count", 0);
 			  };
 			  as_record rec_auid;
 			  as_record_inita(&rec_auid, 1);
 			  if(audienceid != 0){
+			    std::cerr<<"check4"<<std::endl;
 				  as_record_set_int64(&rec_auid, "audienceid", audienceid);
 				  aerospike_key_put(&as, &err, NULL, &key, &rec_auid);
 			  };
 
 		  }else{
+		    std::cerr<<"check6"<<std::endl;
 			  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
 			  int64_t temp = 1;
 			  audienceid = as_record_get_int64(p_rec, "audienceid", temp);
 		  }
 		  res->ext["audience"] = to_string(audienceid);
+		  std::cerr<<"audienceid"<<res->ext["audience"];
 	  }
   }
 
