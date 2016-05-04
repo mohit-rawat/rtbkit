@@ -428,7 +428,7 @@ setSeatBid(Auction const & auction,
   {
 	  as_key key;
 	  as_record* p_rec = NULL;
-	  as_key_init(&key, "test", "locationSet", res->location.countryCode.c_str());
+	  as_key_init(&key, "config", "locationSet", res->location.countryCode.c_str());
 
 	  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
 		  std::cerr<<"key not correct"<<std::endl;
