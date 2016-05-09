@@ -1178,6 +1178,8 @@ struct Bid {
     Datacratic::TaggedInt w;                ///< width of ad in pixels
     Datacratic::TaggedInt h;                ///< height of ad in pixels
     Json::Value ext;              ///< Extended bid fields
+	std::string bundle;           ///< Bundle or package name of the app being advertised 
+    std::set<std::string> cat;   ///<IAB content categories of the creative.
 };
 
 

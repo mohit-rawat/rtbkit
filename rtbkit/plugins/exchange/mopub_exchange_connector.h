@@ -76,6 +76,8 @@ struct MoPubExchangeConnector: public OpenRTBExchangeConnector {
         std::set<int>  attr;                            ///< Creative attributes Appendix 6.3
         std::string ext_creativeapi;                    ///< Creative API
         std::string nurl;       ///< Win notice URL
+		std::set<std::string> imptrackers;       ///< Win notice URL
+		std::string bundle; ///< bundle only for app advertisers
     };
 
     virtual ExchangeCompatibility

@@ -200,6 +200,10 @@ getCreativeCompatibility(const Creative & creative,
         ("creative[].providerConfig.mopub.nurl is empty",
          includeReasons);
 
+	getAttr(result, pconf, "imptrackers", crinfo->imptrackers, includeReasons);
+	if(creative.providerConfig["mopub"]["isApp"] == 1){
+		getAttr(result, pconf, "bundle", crinfo->bundle, includeReasons);
+	}
     // Cache the information
     result.info = crinfo;
 
@@ -385,6 +389,13 @@ setSeatBid(Auction const & auction,
     b.crid = crinfo->crid;
     b.iurl = cpinfo->iurl;
     b.nurl = crinfo->nurl;
+	b.bundle = crinfo->bundle;
+	b.cat = crinfo->cat;
+	int j = 0;
+	for(auto i:crinfo->imptrackers){
+		b.ext["imptrackers"][j] = i;
+		j++;
+	};
 }
 
 template <typename T>
