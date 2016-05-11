@@ -308,12 +308,13 @@ DefaultDescription()
              new StringIdDescription());
     addField("crid", &Bid::crid, "Creative ID",
              new StringIdDescription());
-    addField("attr", &Bid::attr, "Creative attributes");
+//    addField("attr", &Bid::attr, "Creative attributes");
     addField("dealid", &Bid::dealid, "Deal Id for PMP Auction");
     addField("w", &Bid::w, "width of ad in pixels");
     addField("h", &Bid::h, "height of ad in pixels");
     addField("bundle", &Bid::bundle, "Bundle or package name of the app being advertised");
     addField("cat", &Bid::cat, "IAB content categories of the creative");
+    addField("attr", &Bid::psattr, "just to publish attr");
     addField("ext", &Bid::ext, "Extensions");
 }
 

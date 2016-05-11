@@ -353,6 +353,7 @@ setSeatBid(Auction const & auction,
     b.adomain = crinfo->adomain;
     b.nurl = crinfo->nurl;
     b.crid = crinfo->crid;
+	b.psattr = crinfo->attr;
 }
 
 } // namespace RTBKIT
