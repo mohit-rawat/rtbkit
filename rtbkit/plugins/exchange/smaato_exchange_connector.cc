@@ -238,6 +238,7 @@ ExchangeConnector::ExchangeCompatibility
     getAttr(result, pconf, "cat", crinfo->cat, includeReasons);
     getAttr(result, pconf, "type", crinfo->type, includeReasons);
     getAttr(result, pconf, "attr", crinfo->attr, includeReasons);
+    getAttr(result, pconf, "crid", crinfo->crid, includeReasons);
     result.info = crinfo;
  
     return result;
@@ -351,6 +352,7 @@ setSeatBid(Auction const & auction,
     b.adm = crinfo->adm;
     b.adomain = crinfo->adomain;
     b.nurl = crinfo->nurl;
+    b.crid = crinfo->crid;
 }
 
 } // namespace RTBKIT

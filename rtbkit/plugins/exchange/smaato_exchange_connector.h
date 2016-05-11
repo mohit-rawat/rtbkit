@@ -64,6 +64,7 @@ struct SmaatoExchangeConnector: public OpenRTBExchangeConnector {
       std::vector<std::string> mimeTypes; ///< MIME Types for this creative
       std::set<int>  type;                            ///< Creative type Appendix 6.2
       std::set<int>  attr;                            ///< Creative attributes Appendix 6.3
+      Id crid;                                        ///< Creative ID
     };
 
     virtual ExchangeCompatibility
