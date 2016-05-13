@@ -1180,6 +1180,7 @@ struct Bid {
     Json::Value ext;              ///< Extended bid fields
 	std::string bundle;           ///< Bundle or package name of the app being advertised 
     std::set<std::string> cat;   ///<IAB content categories of the creative.
+    std::set<int>  psattr;        ///< to publish Creative attributes 
 };
 
 
