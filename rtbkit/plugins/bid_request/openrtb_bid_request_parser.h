@@ -117,4 +117,16 @@ struct OpenRTBBidRequestParser2point2 : OpenRTBBidRequestParser {
         virtual void onDeal(OpenRTB::Deal & deal);
 };
 
+struct OpenRTBBidRequestParser2point3 : OpenRTBBidRequestParser2point2 {
+
+    OpenRTBBidRequestParser2point3() {
+        apiFrameworks = { {1, "VPAID 1.0"},
+                          {2, "VPAID 2.0"},
+                          {3, "MRAID-1"},
+                          {4, "ORMMA"},
+                          {5, "MRAID-2"}
+        };
+    };
+};
+
 } // namespace RTBKIT

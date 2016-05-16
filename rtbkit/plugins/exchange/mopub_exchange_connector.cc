@@ -216,17 +216,33 @@ parseBidRequest(HttpAuctionHandler & connection,
                 const std::string & payload) {
     std::shared_ptr<BidRequest> res;
 
-    // Check for JSON content-type
+    std::shared_ptr<BidRequest> none; 
+
+   // Check for JSON content-type
     if (header.contentType != "application/json") {
         connection.sendErrorResponse("non-JSON request");
         return res;
+    }
+
+    // Check for the x-openrtb-version header
+    auto it = header.headers.find("x-openrtb-version");
+    if (it == header.headers.end()) {
+        connection.sendErrorResponse("MISSING_OPENRTB_HEADER", "The request is missing the 'x-openrtb-version' header");
+        return none;
+    }
+
+    // Check that it's version 2.3
+    std::string openRtbVersion = it->second;
+    if (openRtbVersion != "2.3") {
+        connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.3 of the OpenRTB protocol but requested " + openRtbVersion);
+        return none;
     }
 
     // Parse the bid request
     // TODO Check with MoPub if they send the x-openrtb-version header
     // and if they support 2.2 now.
     ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
-    res.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory("2.1")->parseBidRequest(context, exchangeName(), exchangeName()));
+    res.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory("2.3")->parseBidRequest(context, exchangeName(), exchangeName()));
 
     // get restrictions enforced by MoPub.
     //1) blocked category

@@ -245,6 +245,10 @@ DefaultDescription()
     addField("devicetype", &Device::devicetype, "Device type");
     addField("flashver", &Device::flashver, "Flash version on device");
     addField("ifa", &Device::ifa, "Native identifier for advertisers");
+    addField("h", &Device::h, "height of screen in pixels");
+    addField("w", &Device::w, "width of screen in pixels");
+    addField("lmt", &Device::lmt, "limit ad tracking");
+    addField("hwv", &Device::hwv, "hardware version");
     addField("ext", &Device::ext, "Extensions to device field go here");
 }
 

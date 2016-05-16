@@ -978,6 +978,10 @@ struct Device {
     DeviceType devicetype; ///< Device type (table 6.16)
     std::string flashver;   ///< Flash on device
     std::string ifa;        ///< Native identifier for advertisers
+    Datacratic::TaggedInt lmt;                ///< “Limit Ad Tracking” signal  where 0 = tracking is unrestricted, 1 = tracking must be limited per commercial guidelines.
+    Datacratic::TaggedInt w;                ///< width of screen in pixels
+    Datacratic::TaggedInt h;                ///< height of screen in pixels
+    std::string hwv;        ///< Hardware version of the device (e.g., “5S” for iPhone 5S).
     Json::Value ext;       ///< Extensions go here
 };
 
