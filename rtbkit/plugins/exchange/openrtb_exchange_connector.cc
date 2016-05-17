@@ -337,6 +337,10 @@ setSeatBid(Auction const & auction,
 			  deviceidgroup = "macmd5";
 		  };
 	  }
+	  if(deviceid.empty() && res->ext["udi"].isMember("googleadid")){
+		  deviceid = res->ext["udi"]["googleadid"].asString();
+		  deviceidgroup = "googleadid";
+	  }
 	  if(deviceid.empty() && res->user!=NULL){
 		  if(!res->user->id.toString().empty()){
 			  deviceid = res->user->id.toString();
