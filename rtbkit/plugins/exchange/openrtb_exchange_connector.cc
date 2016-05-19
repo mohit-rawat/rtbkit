@@ -425,23 +425,6 @@ setSeatBid(Auction const & auction,
 	  }
   }
 
-
-  void
-  OpenRTBExchangeConnector::
-  changeCountryCode(std::shared_ptr<BidRequest> res)
-  {
-	  as_key key;
-	  as_record* p_rec = NULL;
-	  as_key_init(&key, "config", "locationSet", res->location.countryCode.c_str());
-
-	  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
-		  std::cerr<<"key not correct"<<std::endl;
-		  res->location.countryCode = "/";
-	  }else{
-		  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
-		  res->location.countryCode = as_record_get_str(p_rec, "val");
-	  }
-  }
   void
   OpenRTBExchangeConnector::
   getExchangeName(std::shared_ptr<BidRequest> res)

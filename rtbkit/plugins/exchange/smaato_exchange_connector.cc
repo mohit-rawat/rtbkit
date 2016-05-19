@@ -151,7 +151,6 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 
 	OpenRTBExchangeConnector::getAudienceId(result);
-	OpenRTBExchangeConnector::changeCountryCode(result);
 	OpenRTBExchangeConnector::getExchangeName(result);
 
     return result;
