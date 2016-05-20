@@ -864,6 +864,7 @@ struct SiteInfo {
 };
 
 struct Site: public Context, public SiteInfo {
+    Datacratic::TaggedBool mobile;                ///< Mobile-optimized signal, where 0 = no, 1 = yes
 };
 
 
@@ -928,6 +929,7 @@ struct Geo {
     std::string dma;             ///< Direct Marketing Association code
     /// Rubicon extensions
     Datacratic::TaggedBool latlonconsent;  ///< Has user given consent for lat/lon use?
+    Datacratic::TaggedInt utcoffset;         ///< Local time as the number +/- of minutes from UTC
 };
 
 
@@ -982,6 +984,8 @@ struct Device {
     Datacratic::TaggedInt w;                ///< width of screen in pixels
     Datacratic::TaggedInt h;                ///< height of screen in pixels
     std::string hwv;        ///< Hardware version of the device (e.g., “5S” for iPhone 5S).
+    Datacratic::TaggedFloat pxratio;      ///< The ratio of physical pixels to device independent pixels
+    Datacratic::TaggedInt ppi;                ///< Screen size as pixels per linear inch
     Json::Value ext;       ///< Extensions go here
 };
 
@@ -1135,6 +1139,7 @@ struct BidRequest {
     Datacratic::Optional<Regulations> regs; ///< Regulations Object list (OpenRTB 2.2)
     Json::Value ext;                   ///< Protocol extensions
     Json::Value unparseable;           ///< Unparseable fields get put here
+    Datacratic::TaggedBool test;       ///< Indicator of test mode in which auctions are not billable, where 0 = live mode, 1 = test mode
 };
 
 

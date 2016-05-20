@@ -53,6 +53,7 @@ DefaultDescription()
     addField("regs", &BidRequest::regs, "Legal regulations");
     addField("ext", &BidRequest::ext, "Extended fields outside of protocol");
     addField("unparseable", &BidRequest::unparseable, "Unparseable fields are collected here");
+    addField("test", &BidRequest::test, "Indicator of test mode in which auctions are not billable");
 }
 
 DefaultDescription<Impression>::
@@ -188,6 +189,7 @@ DefaultDescription()
     addField("page",   &SiteInfo::page,   "URL of the page");
     addField("ref",    &SiteInfo::ref,    "Referrer URL to the page");
     addField("search", &SiteInfo::search, "Search string to page");
+    addField("mobile", &Site::mobile, "Mobile-optimized signal or not");
 }
 
 DefaultDescription<OpenRTB::App>::
@@ -214,6 +216,7 @@ DefaultDescription()
     addField("zip", &Geo::zip, "Zip or postal code");
     addField("type", &Geo::type, "Source of location data");
     addField("ext", &Geo::ext, "Extensions to the protocol go here");
+    addField("utcoffset", &Geo::utcoffset, "Local time as the number +/- of minutes from UTC");
     /// Datacratic extension
     addField("dma", &Geo::dma, "DMA code");
     /// Rubicon extension
@@ -250,6 +253,8 @@ DefaultDescription()
     addField("lmt", &Device::lmt, "limit ad tracking");
     addField("hwv", &Device::hwv, "hardware version");
     addField("ext", &Device::ext, "Extensions to device field go here");
+    addField("pxratio", &Device::pxratio, "The ratio of physical pixels to device independent pixels");
+    addField("ppi", &Device::ppi, "Screen size as pixels per linear inch");
 }
 
 DefaultDescription<OpenRTB::Segment>::
