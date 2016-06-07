@@ -62,6 +62,13 @@ BidSwitchExchangeConnector::init() {
             Datacratic::jsonDecode(value, data.nurl);
             return true;
         }).optional().snippet();
+
+    configuration_.addField(
+        "adm",
+        [](const Json::Value & value, CreativeInfo & data) {
+            Datacratic::jsonDecode(value, data.adm);
+            return true;
+        }).optional().snippet();
 }
 
 namespace {
@@ -370,7 +377,7 @@ setSeatBid(Auction const & auction,
     b.id = Id(auction.id, auction.request->imp[0].id);
     b.impid = auction.request->imp[spotNum].id;
     b.price.val = USD_CPM(resp.price.maxPrice);
-    b.adm = crinfo->adm;
+    b.adm = configuration_.expand(crinfo->adm, {creative, resp, *auction.request, spotNum});
     b.nurl = configuration_.expand(crinfo->nurl, {creative, resp, *auction.request, spotNum});
     b.adid = crinfo->adid;
     b.adomain = crinfo->adomain;
