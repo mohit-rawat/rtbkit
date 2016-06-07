@@ -112,6 +112,17 @@ getCampaignCompatibility(const AgentConfig & config,
          + exc.what(), includeReasons);
         return result;
     }
+    try {
+        cpinfo->protocol = pconf["protocol"].asString();
+        if (!cpinfo->protocol.size())
+            result.setIncompatible("providerConfig.bidswitch.protocol is null",
+                                   includeReasons);
+    } catch (const std::exception & exc) {
+        result.setIncompatible
+        (string("providerConfig.bidswitch.protocol parsing error: ")
+         + exc.what(), includeReasons);
+        return result;
+    }
 
     result.info = cpinfo;
 
@@ -183,10 +194,17 @@ getCreativeCompatibility(const Creative & creative,
         result.setIncompatible
         ("creative[].providerConfig.bidswitch.adomain is null",
          includeReasons);
+    // 4.  Must have bidswitch.adm that includes MoPub's macro
+    getAttr(result, pconf, "adm", crinfo->adm, includeReasons);
+    if (crinfo->adm.find("${AUCTION_PRICE}") == string::npos)
+        result.setIncompatible
+        ("creative[].providerConfig.bidswitch.adm ad markup must contain "
+         "encrypted win price macro ${AUCTION_PRICE}",
+         includeReasons);
     // Cache the information
     result.info = crinfo;
 
-    // 4. Check if the creative has a Google subsection.
+    // 5. Check if the creative has a Google subsection.
     // if so, try to read "vendor type" and "attributes"
     // we do not enforce anything here. If nothing's configured
     // here, Adx traffic will be filtered out.
@@ -347,10 +365,12 @@ setSeatBid(Auction const & auction,
     auto & b = seatBid.bid.back();
 
     // Put in the variable parts
+	response.ext["protocol"] = cpinfo->protocol;
     b.cid = Id(resp.agent);
     b.id = Id(auction.id, auction.request->imp[0].id);
     b.impid = auction.request->imp[spotNum].id;
     b.price.val = USD_CPM(resp.price.maxPrice);
+    b.adm = crinfo->adm;
     b.nurl = configuration_.expand(crinfo->nurl, {creative, resp, *auction.request, spotNum});
     b.adid = crinfo->adid;
     b.adomain = crinfo->adomain;

@@ -53,6 +53,7 @@ struct BidSwitchExchangeConnector: public OpenRTBExchangeConnector {
     struct CampaignInfo {
         Id seat;          ///< ID of the BidSwitch exchange seat
         std::string iurl; ///< Image URL for content checking
+		std::string protocol; ///<ext.protocol
     };
 
     virtual ExchangeCompatibility
@@ -63,6 +64,7 @@ struct BidSwitchExchangeConnector: public OpenRTBExchangeConnector {
         filter and serve a creative.
     */
     struct CreativeInfo {
+        std::string adm;                                ///< Ad markup
         Id adid;                ///< ID for ad to be service if bid wins
         std::string nurl;       ///< Win notice URL
         std::vector<std::string> adomain;    ///< Advertiser Domain
