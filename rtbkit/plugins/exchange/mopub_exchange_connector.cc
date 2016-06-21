@@ -256,6 +256,7 @@ parseBidRequest(HttpAuctionHandler & connection,
     //4) per slot: check for mraid object.. not supported for now
     std::vector<int> intv;
     for (auto& spot: res->imp) {
+		if(spot.banner.get()){
         for (const auto& t: spot.banner->btype) {
             intv.push_back (t.val);
         }
@@ -265,6 +266,7 @@ parseBidRequest(HttpAuctionHandler & connection,
             intv.push_back (a.val);
         }
         spot.restrictions.addInts("blockedAttrs", intv);
+		}
 
         // Check for a video bid
         if(spot.ext.isMember("video")) {
