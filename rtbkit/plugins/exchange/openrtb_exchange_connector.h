@@ -64,6 +64,8 @@ struct OpenRTBExchangeConnector : public HttpExchangeConnector {
 
 	void getAudienceId(std::shared_ptr<BidRequest> res);
 
+	void getIMEIcode(std::shared_ptr<BidRequest> res);
+
 	void getExchangeName(std::shared_ptr<BidRequest> res);
 
 private:

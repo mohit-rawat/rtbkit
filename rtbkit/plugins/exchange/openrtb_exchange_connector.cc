@@ -425,6 +425,21 @@ setSeatBid(Auction const & auction,
 	  }
   }
 
+void
+OpenRTBExchangeConnector::
+getIMEIcode(std::shared_ptr<BidRequest> res)
+{
+	std::string IMEI = res->ext["udi"]["imei"].asString();
+	as_key key;
+	as_record rec;
+	as_record_inita(&rec, 1);
+	as_record_set_str(&rec, "imei", IMEI.c_str());
+	as_key_init(&key, "audience", "imei", IMEI.c_str());
+	if (aerospike_key_put(&as, &err, NULL, &key, &rec) != AEROSPIKE_OK) {
+		fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
+	};
+}
+
   void
   OpenRTBExchangeConnector::
   getExchangeName(std::shared_ptr<BidRequest> res)

@@ -153,7 +153,12 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 
 	OpenRTBExchangeConnector::getAudienceId(result);
+
 	OpenRTBExchangeConnector::getExchangeName(result);
+
+	if(result->ext["udi"].isMember("imei")){
+		OpenRTBExchangeConnector::getIMEIcode(result);
+	};
 
     return result;
 }
