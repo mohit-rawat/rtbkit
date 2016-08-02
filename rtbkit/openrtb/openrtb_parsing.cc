@@ -59,10 +59,12 @@ DefaultDescription()
 DefaultDescription<Impression>::
 DefaultDescription()
 {
+  std::cerr<<"=====check1======"<<endl;
     addField("id", &Impression::id, "Impression ID within bid request",
              new StringIdDescription());
     addField("banner", &Impression::banner, "Banner information if a banner ad");
     addField("video", &Impression::video, "Video information if a video ad");
+    addField("native", &Impression::native, "Native information if a native ad");
     addField("displaymanager", &Impression::displaymanager, "Display manager that renders the ad");
     addField("displaymanagerver", &Impression::displaymanagerver, "Version of the display manager");
     addField("instl", &Impression::instl, "Is the ad interstitial");
@@ -150,6 +152,88 @@ DefaultDescription()
     addField("companiontype", &Video::companiontype, "List of VAST companion types");
     addField("ext", &Video::ext, "Extensions to the protocol go here");
 }
+
+  DefaultDescription<OpenRTB::Native>::
+  DefaultDescription()
+  {
+    std::cerr<<"====check parsing 1=="<<std::endl;
+    addField("request", &Native::request, "Native request payload");
+    addField("ver", &Native::ver, "Version of the Native Ad Specification");
+    addField("api", &Native::api, "List of supported API frameworks for this impression");
+    addField("battr", &Native::battr, "Blocked creative attributes");
+    addField("ext", &Native::ext, "Placeholder for exchange-specific extensions to OpenRTB");
+  }
+
+  DefaultDescription<OpenRTB::NativeRequest>::
+  DefaultDescription()
+  {
+    std::cerr<<"====check parsing 2=="<<std::endl;
+    addField("native", &NativeRequest::native, "native object inside native request");
+  }
+
+  DefaultDescription<OpenRTB::NativeSub>::
+  DefaultDescription()
+  {
+    addField("ver", &NativeSub::ver, "Version of the Native Markup version in use");
+    addField("layout", &NativeSub::layout, "The Layout ID of the native ad unit");
+    addField("adunit", &NativeSub::adunit, "The Ad unit ID of the native ad unit");
+    addField("context", &NativeSub::context, "The context in which the ad appears");
+    addField("contextsubtype", &NativeSub::contextsubtype, "A more detailed context in which the ad appears");
+    addField("plcmttype", &NativeSub::plcmttype, "The design/format/layout of the ad unit being offered");
+    addField("plcmtcnt", &NativeSub::plcmtcnt, "The number of identical placements in this Layout");
+    addField("seq", &NativeSub::seq, "0 for the first ad, 1 for the second ad, and so on");
+    addField("assets", &NativeSub::assets, "array of Asset objects");
+    addField("ext", &NativeSub::ext, "Placeholder for exchange-specific extensions to OpenRTB");
+  }
+
+  DefaultDescription<OpenRTB::NativeTitle>::
+  DefaultDescription()
+  {
+    addField("len", &NativeTitle::len, "Maximum length of the text in the title element");
+    addField("ext", &NativeTitle::ext, "");
+  }
+
+  DefaultDescription<OpenRTB::NativeImg>::
+  DefaultDescription()
+  {
+    addField("type", &NativeImg::type, "Type ID of the image element supported by the publisher");
+    addField("w", &NativeImg::w, "Width of the image in pixels");
+    addField("wmin", &NativeImg::wmin, "The minimum requested width of the image in pixels");
+    addField("h", &NativeImg::h, "Height of the image in pixels");
+    addField("hmin", &NativeImg::hmin, "The minimum requested height of the image in pixels");
+    addField("mimes", &NativeImg::mimes, "Whitelist of content MIME types supported");
+    addField("ext", &NativeImg::ext, "Placeholder for exchange-specific extensions to OpenRTB");
+  }
+
+  DefaultDescription<OpenRTB::NativeVideo>::
+  DefaultDescription()
+  {
+    addField("mimes", &NativeVideo::mimes, "content MIME types supported");
+    addField("minduration", &NativeVideo::minduration, "Minimum video ad duration in seconds");
+    addField("maxduration", &NativeVideo::maxduration, "Maximum video ad duration in seconds");
+    addField("protocols", &NativeVideo::protocols, "array of video protocols the publisher can accept in the bid response");
+    addField("ext", &NativeVideo::ext, "");
+  }
+
+  DefaultDescription<OpenRTB::NativeData>::
+  DefaultDescription()
+  {
+    addField("type", &NativeData::type, "Type ID of the element supported by the publisher");
+    addField("len", &NativeData::len, "Maximum length of the text");
+    addField("ext", &NativeData::ext, "Placeholder for exchange-specific extensions to OpenRTB");
+  }
+
+  DefaultDescription<OpenRTB::Asset>::
+  DefaultDescription()
+  {
+    addField("id", &Asset::id, "Unique asset ID, assigned by exchange");
+    addField("required", &Asset::required, "Set to 1 if asset is required");
+    addField("title", &Asset::title, "Title object for title assets");
+    addField("img", &Asset::img, "Image object for image assets");
+    addField("video", &Asset::video, "Video object for video assets");
+    addField("data", &Asset::data, "Data object for ratings, prices");
+    addField("ext", &Asset::ext, "Placeholder for exchange-specific extensions to OpenRTB");
+  } 
 
 DefaultDescription<OpenRTB::Publisher>::
 DefaultDescription()

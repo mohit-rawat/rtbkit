@@ -48,6 +48,46 @@ Video::
 {
 }
 
+
+  NativeTitle::
+  ~NativeTitle()
+  {
+  }
+
+  NativeImg::
+  ~NativeImg()
+  {
+  }
+
+  NativeVideo::
+  ~NativeVideo()
+  {
+  }
+
+  NativeData::
+  ~NativeData()
+  {
+  }
+  Asset::
+  ~Asset()
+  {
+  }
+
+  NativeSub::
+  ~NativeSub()
+  {
+  }
+
+  NativeRequest::
+  ~NativeRequest()
+  {
+  }
+
+  Native::
+  ~Native()
+  {
+  }
+
 Content::
 ~Content()
 {

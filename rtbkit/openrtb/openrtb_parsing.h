@@ -277,6 +277,55 @@ struct DefaultDescription<OpenRTB::Video>
     DefaultDescription();
 };
 
+  template<>
+  struct DefaultDescription<OpenRTB::NativeTitle>
+    : public StructureDescription<OpenRTB::NativeTitle> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::NativeImg>
+    : public StructureDescription<OpenRTB::NativeImg> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::NativeVideo>
+    : public StructureDescription<OpenRTB::NativeVideo> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::NativeData>
+    : public StructureDescription<OpenRTB::NativeData> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::Native>
+    : public StructureDescription<OpenRTB::Native> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::NativeRequest>
+    : public StructureDescription<OpenRTB::NativeRequest> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::Asset>
+    : public StructureDescription<OpenRTB::Asset> {
+    DefaultDescription();
+  };
+
+  template<>
+  struct DefaultDescription<OpenRTB::NativeSub>
+    : public StructureDescription<OpenRTB::NativeSub> {
+    DefaultDescription();
+  };
+
+
 template<>
 struct DefaultDescription<OpenRTB::Content>
     : public StructureDescription<OpenRTB::Content> {

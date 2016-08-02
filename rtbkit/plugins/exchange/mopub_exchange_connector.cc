@@ -334,11 +334,11 @@ parseBidRequest(HttpAuctionHandler & connection,
         spot.restrictions.addInts("blockedAttrs", intv);
       }
       if(spot.native.get()){
-	intv.clear();
-	for (const auto& a: spot.native->battr) {
-	  intv.push_back (a);
-	}
-	spot.restrictions.addInts("blockedAttrs", intv);
+		  intv.clear();
+		  for (const auto& a: spot.native->battr) {
+			  intv.push_back (a);
+		  }
+		  spot.restrictions.addInts("blockedAttrs", intv);
       }
         // Check for a video bid
         if(spot.ext.isMember("video")) {

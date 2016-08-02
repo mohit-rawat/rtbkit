@@ -20,6 +20,7 @@ struct CreativeIdsExchangeFilter
     {
 
         auto doFilter = [&](const Json::Value& value) -> bool {
+	  std::cerr<<"======================================="<<std::endl;
             using std::find_if;  using std::begin;  using std::end;
             using std::stoi;
             if (value.isArray()) {

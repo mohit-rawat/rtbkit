@@ -126,6 +126,7 @@ parseBidRequest(HttpAuctionHandler & connection,
     // per slot: blocked type and attribute;
     std::vector<int> intv;
     for (auto& spot: result->imp) {
+		if(spot.banner.get()){
         for (const auto& t: spot.banner->btype) {
             intv.push_back (t.val);
         }
@@ -135,6 +136,7 @@ parseBidRequest(HttpAuctionHandler & connection,
             intv.push_back (a.val);
         }
         spot.restrictions.addInts("blockedAttrs", intv);
+	}
 	}
 
     // Check if we want some reporting
@@ -151,7 +153,12 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 
 	OpenRTBExchangeConnector::getAudienceId(result);
+
 	OpenRTBExchangeConnector::getExchangeName(result);
+
+	if(result->ext["udi"].isMember("imei")){
+		OpenRTBExchangeConnector::getIMEIcode(result);
+	};
 
     return result;
 }
