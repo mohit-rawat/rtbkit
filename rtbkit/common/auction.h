@@ -67,7 +67,8 @@ struct Auction : public std::enable_shared_from_this<Auction> {
     Date inPrepro, outOfPrepro;
     Date doneAugmenting;
     Date inStartBidding;
-
+  // List of matching assetids
+  Json::Value AssetList;
     Id id;
     std::shared_ptr<BidRequest>  request;
     std::string requestStr;  ///< Stringified version of request

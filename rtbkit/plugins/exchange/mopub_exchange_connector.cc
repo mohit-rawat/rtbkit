@@ -17,6 +17,7 @@
 #include <boost/lexical_cast.hpp>
 #include "jml/utils/file_functions.h"
 #include "rtbkit/plugins/exchange/openrtb_exchange_connector.h"
+#include "rtbkit/core/router/filters/creative_filters.cc"
 #include "crypto++/blowfish.h"
 #include "crypto++/modes.h"
 #include "crypto++/filters.h"
@@ -133,6 +134,9 @@ getCreativeCompatibility(const Creative & creative,
     auto crinfo = std::make_shared<CreativeInfo>();
 
     const Json::Value & pconf = creative.providerConfig["mopub"];
+
+    const Json::Value & vconf = creative.videoConfig;
+
     std::string tmp;
 
     boost::char_separator<char> sep(" ,");
@@ -199,21 +203,83 @@ getCreativeCompatibility(const Creative & creative,
         result.setIncompatible
         ("creative[].providerConfig.mopub.nurl is empty",
          includeReasons);
-
-	getAttr(result, pconf, "imptrackers", crinfo->imptrackers, includeReasons);
+	if(creative.adformat != "native"){
+	  getAttr(result, pconf, "imptrackers", crinfo->imptrackers, includeReasons);
+	}
 	if(creative.providerConfig["mopub"]["isApp"] == 1){
 		getAttr(result, pconf, "bundle", crinfo->bundle, includeReasons);
 	}
+	if(creative.adformat == "video"){
+	  std::cerr<<"=================="<<creative.adformat<<std::endl;
+	  getAttr(result, vconf, "duration", crinfo->duration, includeReasons);
+	}
+	if(creative.adformat == "video"||"native"){
+	  getAttr(result, pconf, "crtype", crinfo->crtype, includeReasons);
+	}
+
     // Cache the information
     result.info = crinfo;
 
     return result;
 }
+
+  char *str_replace(char *orig, char *rep, char *with) {
+    char *result; // the return string
+    char *ins;    // the next insert point
+    char *tmp;    // varies
+    int len_rep;  // length of rep
+    int len_with; // length of with
+    int len_front; // distance between rep and end of last rep
+    int count;    // number of replacements
+
+    if (!orig)
+      return NULL;
+    if (!rep)
+      rep = (char*)"";
+    len_rep = strlen(rep);
+    if (!with)
+      with = (char*)"";
+    len_with = strlen(with);
+
+    ins = orig;
+    for (count = 0; (tmp = strstr(ins, rep)); ++count) {
+      ins = tmp + len_rep;
+    }
+
+    // first time through the loop, all the variable are set correctly
+    // from here on,
+    //    tmp points to the end of the result string
+    //    ins points to the next occurrence of rep in orig
+    //    orig points to the remainder of orig after "end of rep"
+    tmp = result = (char*)malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+
+    if (!result)
+      return NULL;
+    while (count--) {
+      ins = strstr(orig, rep);
+      len_front = ins - orig;
+      tmp = strncpy(tmp, orig, len_front) + len_front;
+      tmp = strcpy(tmp, with) + len_with;
+      orig += len_front + len_rep; // move to next "end of rep"
+    }
+    strcpy(tmp, orig);
+    return result;
+  }
+
 std::shared_ptr<BidRequest>
 MoPubExchangeConnector::
 parseBidRequest(HttpAuctionHandler & connection,
                 const HttpHeader & header,
                 const std::string & payload) {
+
+  std::string abc = payload;
+  char *cstr = &abc[0u];
+  cstr = str_replace(cstr, (char*)"\\", (char*)"");
+  cstr = str_replace(cstr, (char*)"\"{", (char*)"{");
+  cstr = str_replace(cstr, (char*)"}\"", (char*)"}");
+  abc = cstr;
+
+  std::cerr<<"bidstring : "<<abc<<std::endl;
     std::shared_ptr<BidRequest> res;
 
     std::shared_ptr<BidRequest> none; 
@@ -241,7 +307,7 @@ parseBidRequest(HttpAuctionHandler & connection,
     // Parse the bid request
     // TODO Check with MoPub if they send the x-openrtb-version header
     // and if they support 2.2 now.
-    ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
+    ML::Parse_Context context("Bid Request", cstr, abc.size());
     res.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory("2.3")->parseBidRequest(context, exchangeName(), exchangeName()));
 
     // get restrictions enforced by MoPub.
@@ -256,6 +322,7 @@ parseBidRequest(HttpAuctionHandler & connection,
     //4) per slot: check for mraid object.. not supported for now
     std::vector<int> intv;
     for (auto& spot: res->imp) {
+      if(spot.banner.get()){
         for (const auto& t: spot.banner->btype) {
             intv.push_back (t.val);
         }
@@ -265,7 +332,14 @@ parseBidRequest(HttpAuctionHandler & connection,
             intv.push_back (a.val);
         }
         spot.restrictions.addInts("blockedAttrs", intv);
-
+      }
+      if(spot.native.get()){
+	intv.clear();
+	for (const auto& a: spot.native->battr) {
+	  intv.push_back (a);
+	}
+	spot.restrictions.addInts("blockedAttrs", intv);
+      }
         // Check for a video bid
         if(spot.ext.isMember("video")) {
             auto video = spot.ext["video"];
@@ -340,7 +414,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::getExchangeName(res);
-   
+	std::cerr<<"bidrequest : "<<res->toJson()<<std::endl;  
     return res;
 }
 
@@ -468,6 +542,13 @@ using namespace RTBKIT;
 struct AtInit {
     AtInit() {
         ExchangeConnector::registerFactory<MoPubExchangeConnector>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeTitleLengthFilter>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeImageFilter>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeDataFilter>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeVideoFilter>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeContextFilter>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeContextSubtypeFilter>();
+	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativePlcmttypeFilter>();
     }
 } atInit;
 }
