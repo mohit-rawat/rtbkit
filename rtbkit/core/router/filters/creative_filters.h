@@ -76,7 +76,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativeTitleLengthFilter : public IterativeCreativeFilter<NativeTitleLengthFilter>
   {
     static constexpr const char *name = "NativeTitleLengthFilter";
-    unsigned priority() const { return 100; }
+    unsigned priority() const { return 0xF303; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
       int length = creative.nativeConfig["assets"]["title"]["len"].asInt();
@@ -111,7 +111,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativeImageFilter : public IterativeCreativeFilter<NativeImageFilter>
   {
     static constexpr const char *name = "NativeImageFilter";
-    unsigned priority() const { return 100; }
+    unsigned priority() const { return 0xF306; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
       std::cerr<<"CreativeMatrix : "<<state.creatives(0).print()<<std::endl;
@@ -156,7 +156,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativeDataFilter : public IterativeCreativeFilter<NativeDataFilter>
   {
     static constexpr const char *name = "NativeDataFilter";
-    unsigned priority() const { return 100; }
+    unsigned priority() const { return 0xF305; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
 
@@ -176,10 +176,10 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		  return false;
 		};
 		if(unused[i] == true && asset.data->type.val == dataassets[i]["type"].asInt() && ((asset.data->len.val == -1) ||  asset.data->len.val >= dataassets[i]["len"].asInt())){
-		            std::cerr<<"====5===="<<std::endl;
-		  unused[i] = false;
-		  state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)][std::to_string(asset.id.val)] = dataassets[i]["id"];
-		  break;
+			std::cerr<<"====5===="<<std::endl;
+			unused[i] = false;
+			state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)][std::to_string(asset.id.val)] = dataassets[i]["id"];
+			break;
 		}
 	      }
 	    }
@@ -198,7 +198,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativeVideoFilter : public IterativeCreativeFilter<NativeVideoFilter>
   {
     static constexpr const char *name = "NativeVideoFilter";
-    unsigned priority() const { return 100; }
+    unsigned priority() const { return 0xF304; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
       //      if (creative.adformat=="native"){
@@ -232,7 +232,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativeContextFilter : public IterativeCreativeFilter<NativeContextFilter>
   {
     static constexpr const char *name = "NativeContextFilter";
-    unsigned priority() const { return 100; }
+	  unsigned priority() const { return 0xF302; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
       if(spot.native){
@@ -255,7 +255,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativeContextSubtypeFilter : public IterativeCreativeFilter<NativeContextSubtypeFilter>
   {
     static constexpr const char *name = "NativeContextSubtypeFilter";
-    unsigned priority() const { return 100; }
+    unsigned priority() const { return 0xF301; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
       if(spot.native){
@@ -278,7 +278,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
   struct NativePlcmttypeFilter : public IterativeCreativeFilter<NativePlcmttypeFilter>
   {
     static constexpr const char *name = "NativePlcmttypeFilter";
-    unsigned priority() const { return 100; }
+    unsigned priority() const { return 0xF300; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
       if(spot.native){
