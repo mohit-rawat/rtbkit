@@ -485,6 +485,9 @@ setSeatBid(Auction const & auction,
 		b.ext["imptrackers"][j] = i;
 		j++;
 	};
+	b.ext["crtype"] = crinfo->crtype;
+	b.ext["duration"] = crinfo->duration;
+	b.psattr = crinfo->attr;
 }
 
 template <typename T>
