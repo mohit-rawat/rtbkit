@@ -366,6 +366,62 @@ private:
 };
 
 /******************************************************************************/
+/* CONNECTIONTYPE FILTER                                                      */
+/******************************************************************************/
+
+	struct ConnectiontypeFilter : public FilterBaseT<ConnectiontypeFilter>
+	{
+		static constexpr const char* name = "Connectiontype";
+		unsigned priority() const { return 12; }
+
+		void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+			{
+				impl.setIncludeExclude(configIndex, value, config.connectiontypeFilter);
+			}
+
+		void filter(FilterState& state) const
+			{
+				if(state.request.device ==NULL){
+					state.narrowConfigs(impl.filter("nomodel"));
+				}else{
+				  state.narrowConfigs(impl.filter(std::to_string(state.request.device->connectiontype.val)));		
+				}
+			}
+
+	private:
+		typedef RegexFilter<boost::regex, std::string> BaseFilter;
+		IncludeExcludeFilter<BaseFilter> impl;
+	};
+
+/******************************************************************************/
+/* OSVERSION FILTER                                                           */
+/******************************************************************************/
+
+	struct OsversionFilter : public FilterBaseT<OsversionFilter>
+	{
+		static constexpr const char* name = "Osversion";
+		unsigned priority() const { return 10; }
+
+		void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+			{
+				impl.setIncludeExclude(configIndex, value, config.osversionFilter);
+			}
+
+		void filter(FilterState& state) const
+			{
+				if(state.request.device ==NULL){
+					state.narrowConfigs(impl.filter("noosversion"));
+				}else{
+					state.narrowConfigs(impl.filter(state.request.device->osv.utf8String()));
+				}
+			}
+
+	private:
+		typedef RegexFilter<boost::regex, std::string> BaseFilter;
+		IncludeExcludeFilter<BaseFilter> impl;
+	};
+	
+/******************************************************************************/
 /* LOCATION FILTER                                                            */
 /******************************************************************************/
 
