@@ -291,6 +291,8 @@ struct AgentConfig {
 	IncludeExclude<CachedRegex<boost::regex, std::string> > devicemodelFilter;
     IncludeExclude<CachedRegex<boost::regex, std::string> > appidFilter;
     IncludeExclude<CachedRegex<boost::regex, std::string> > siteidFilter;
+	IncludeExclude<CachedRegex<boost::regex, std::string> > connectiontypeFilter;
+	IncludeExclude<CachedRegex<boost::regex, std::string> > osversionFilter;
     IncludeExclude<CachedRegex<boost::u32regex, Datacratic::UnicodeString> > locationFilter;
     LatLonRadList latLongDevFilter; // latitude and longitude device filter
 
