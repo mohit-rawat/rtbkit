@@ -76,6 +76,7 @@ struct AugmentationInfo {
     std::shared_ptr<Auction> auction;   ///< Our copy of the auction
     Date lossTimeout;                     ///< When we send a loss if
     std::vector<GroupPotentialBidders> potentialGroups; ///< One per group
+  Json::Value AssetList;
 };
 
 

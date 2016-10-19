@@ -133,6 +133,7 @@ filter(const BidRequest& br, const ExchangeConnector* conn, const ConfigSet& mas
     uint64_t ticksStart = sampleStats ? ticks() : 0;
 
     for (FilterBase* filter : current->filters) {
+		cerr << "Filter name :: " <<  filter->name() << endl;
         filter->filter(state);
 
         const ConfigSet& filtered = state.configs();
@@ -163,7 +164,16 @@ filter(const BidRequest& br, const ExchangeConnector* conn, const ConfigSet& mas
         entry.biddableSpots = std::move(biddableSpots[i]);
         result.emplace_back(std::move(entry));
     }
-
+    for(auto i : br.imp){
+      result.AssetList[i.id.toString()] = state.AssetList[i.id.toString()];
+    }
+    cerr << "AssetList in state in filterpool " <<state.AssetList<< endl;
+    for(auto i : result){
+      cerr << "configentry.name" <<i.name<< endl;
+    }
+    for(auto i : biddableSpots){
+      cerr << "biddablespots :: " <<i.second.toJson()<< endl;
+    }
     return result;
 }
 

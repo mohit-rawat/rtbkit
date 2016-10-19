@@ -67,8 +67,13 @@ struct FilterPool
 
         // Only used in the instances returned from filter.
         BiddableSpots biddableSpots;
+      Json::Value ext;
     };
-    typedef std::vector<ConfigEntry> ConfigList;
+    typedef std::vector<ConfigEntry> ConfigListtemp;
+
+  struct ConfigList : public ConfigListtemp {
+    Json::Value AssetList;
+  };
 
     ConfigList filter(
             const BidRequest& br,

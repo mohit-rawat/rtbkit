@@ -157,7 +157,7 @@ void HttpBidderInterface::sendAuctionMessage(std::shared_ptr<Auction> const & au
                                              double timeLeftMs,
                                              std::map<std::string, BidInfo> const & bidders) {
     using namespace std;
-
+    std::cerr<<"Assetlist in httpbdrintrfce sendauctionmessage : "<<auction->AssetList<<std::endl;
     auto findAgent = [=](uint64_t externalId)
         -> pair<string, shared_ptr<const AgentConfig>> {
 
@@ -589,7 +589,7 @@ bool HttpBidderInterface::prepareRequest(OpenRTB::BidRequest &request,
 void HttpBidderInterface::tagRequest(OpenRTB::BidRequest &request,
                                      const std::map<std::string, BidInfo> &bidders) const
 {
-
+  std::cerr<<"request.ext : "<<request.ext<<std::endl;
     for (const auto &bidder: bidders) {
         const auto &agentConfig = bidder.second.agentConfig;
         const auto &spots = bidder.second.imp;
@@ -597,12 +597,18 @@ void HttpBidderInterface::tagRequest(OpenRTB::BidRequest &request,
         for (const auto &spot: spots) {
             const int adSpotIndex = spot.first;
             const auto& creativeIndexes = spot.second;
+	    for(auto i: spot.second){
+	      std::cerr<<"spot.second : "<<i<<std::endl;
+	    }
             ExcCheck(adSpotIndex >= 0 && adSpotIndex < request.imp.size(),
                      "adSpotIndex out of range");
             auto &imp = request.imp[adSpotIndex];
+	    std::cerr<<"===1==="<<imp.ext<<std::endl;
+	    std::cerr<<"======"<<imp.ext["external-ids"]<<std::endl;
             auto &externalIds = imp.ext["external-ids"];
+	    std::cerr<<"===2==="<<imp.ext<<std::endl;
             externalIds.append(agentConfig->externalId);
-
+			std::cerr<<imp.ext<<std::endl;
             auto& creativesExtField = imp.ext["creative-indexes"];
 
 
@@ -620,6 +626,23 @@ bool HttpBidderInterface::prepareStandardRequest(OpenRTB::BidRequest &request,
                                          const RTBKIT::BidRequest &originalRequest,
                                          const std::shared_ptr<Auction> &auction,
                                          const std::map<std::string, BidInfo> &bidders) const {
+  std::cerr<<"assetlist in prepareStandardRequest auction : "<<auction->AssetList<<std::endl;
+  //   request.imp[0].ext["Assetlist"] = auction->AssetList; 
+  for(auto &i : request.imp){
+    //    auto& temp = i.ext["AssetList"];
+    i.ext["AssetList"] = auction->AssetList[i.id.toString()]; 
+    //    temp.append(auction->AssetList[i.id.toString()]);
+    std::cerr<<"i.id"<<i.id.toString()<<std::endl;
+    std::cerr<<"i.ext[AssetList] : "<<i.ext["AssetList"]<<std::endl;
+    std::cerr<<"Auction.AssetList : "<<auction->AssetList[i.id.toString()]<<std::endl;
+  }
+
+  for(auto i : request.imp){
+    std::cerr<<"ext : "<<i.ext<<std::endl;
+  }
+  std::cerr<<"request.imp[0].ext[AssetList] : "<<request.imp[0].ext["AssetList"]<<std::endl;
+  std::cerr<<"request.imp[0].ext : "<<request.imp[0].ext<<std::endl;
+  std::cerr<<"request.imp[0].id.toString() : "<<request.imp[0].id.toString()<<std::endl; 
     tagRequest(request, bidders);
 
     // Take any augmentation data and fill in the ext field of the bid request with the data,

@@ -435,6 +435,8 @@ struct FilterState
 
     void resetFilterReasons();
 
+  Json::Value AssetList;
+
 private:
     void updateConfigs()
     {

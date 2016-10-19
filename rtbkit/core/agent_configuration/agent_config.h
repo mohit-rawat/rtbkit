@@ -47,12 +47,19 @@ struct Creative {
     Format format;
 
     /// Purely for information (used internally)
-    std::string name;
+  std::string name;
+  std::string adformat; 
     int id;
 
     /// Configuration values; per provider
     /// eg: OpenRTB, ...
     Json::Value providerConfig;
+
+  ///information needed for nativeads
+  Json::Value nativeConfig;
+
+  ///information needed for videoads
+  Json::Value videoConfig;
 
     /// lock for the provider data
     mutable ML::Spinlock lock;

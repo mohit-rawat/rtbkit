@@ -44,6 +44,7 @@ fromJson(const Json::Value & val)
         format.height = val["height"].asInt();
     }
     name = val["name"].asString();
+    adformat = val["adformat"].asString();
 
     id = -1;
     if (val.isMember("id"))
@@ -55,6 +56,10 @@ fromJson(const Json::Value & val)
         dealId = val["dealId"].asString();
 
     providerConfig = val["providerConfig"];
+
+    nativeConfig = val["nativeConfig"];
+
+    videoConfig = val["videoConfig"];
 
     languageFilter.fromJson(val["languageFilter"], "languageFilter");
     locationFilter.fromJson(val["locationFilter"], "locationFilter");
@@ -76,6 +81,7 @@ toJson() const
     Json::Value result;
     result["format"] = format.toJson();
     result["name"] = name;
+    result["adformat"] = adformat;
     if (id != -1)
         result["id"] = id;
     if (!languageFilter.empty())
@@ -86,6 +92,10 @@ toJson() const
         result["exchangeFilter"] = exchangeFilter.toJson();
     if (!providerConfig.isNull())
         result["providerConfig"] = providerConfig;
+    if (!nativeConfig.isNull())
+      result["nativeConfig"] = nativeConfig;
+    if (!videoConfig.isNull())
+      result["videoConfig"] = videoConfig;
     if (!segments.empty()) {
         Json::Value segmentInfo;
         for (auto it = segments.begin(), end = segments.end();

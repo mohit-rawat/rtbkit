@@ -671,6 +671,78 @@ struct Video {
     Json::Value ext;            ///< Extensions go here, new in OpenRTB 2.1
 };
 
+  struct NativeTitle{
+    ~NativeTitle();
+    Datacratic::TaggedInt len;
+    Json::Value ext;
+  };
+
+  struct NativeImg{
+    ~NativeImg();
+    Datacratic::TaggedInt type;
+    Datacratic::TaggedInt w;
+    Datacratic::TaggedInt wmin;
+    Datacratic::TaggedInt h;
+    Datacratic::TaggedInt hmin;
+    std::vector<std::string> mimes;
+    Json::Value ext;
+  };
+
+  struct NativeVideo{
+    ~NativeVideo();
+    std::vector<std::string> mimes;
+    Datacratic::TaggedInt minduration;
+    Datacratic::TaggedInt maxduration;
+    Datacratic::List<int> protocols;
+    Json::Value ext;
+  };
+
+  struct NativeData{
+    ~NativeData();
+    Datacratic::TaggedInt type;
+    Datacratic::TaggedInt len;
+    Json::Value ext;
+  };
+
+  struct Asset {
+    ~Asset();
+    Datacratic::TaggedInt id;
+    Datacratic::TaggedInt required;
+    Datacratic::Optional<NativeTitle> title;
+    Datacratic::Optional<NativeImg> img;
+    Datacratic::Optional<NativeVideo> video;
+    Datacratic::Optional<NativeData> data;
+    Json::Value ext;
+  };
+
+  struct NativeSub {
+    ~NativeSub();
+    Datacratic::UnicodeString ver;
+    Datacratic::TaggedInt layout;
+    Datacratic::TaggedInt adunit;
+    Datacratic::TaggedInt context;
+    Datacratic::TaggedInt contextsubtype;
+    Datacratic::TaggedInt plcmttype;
+    Datacratic::TaggedInt plcmtcnt;
+    Datacratic::TaggedInt seq;
+    std::vector<Asset> assets;
+    Json::Value ext;
+  };
+
+  struct NativeRequest {
+    ~NativeRequest();
+    NativeSub native;
+
+  };
+
+  struct Native {
+    ~Native();
+    NativeRequest request;
+    Datacratic::UnicodeString ver;
+    Datacratic::List<int> api;
+    Datacratic::List<int> battr;
+    Json::Value ext;
+  };
 
 /*****************************************************************************/
 /* PRODUCER / PUBLISHER                                                      */
@@ -761,6 +833,7 @@ struct Impression {
     Datacratic::Id id;                             ///< Impression ID within BR
     Datacratic::Optional<Banner> banner;           ///< If it's a banner ad
     Datacratic::Optional<Video> video;             ///< If it's a video ad
+    Datacratic::Optional<Native> native;             ///< If it's a native ad
     Datacratic::UnicodeString displaymanager;          ///< What renders the ad
     Datacratic::UnicodeString displaymanagerver;        ///< What version of that thing
     Datacratic::TaggedBoolDef<0> instl;            ///< Is it interstitial
