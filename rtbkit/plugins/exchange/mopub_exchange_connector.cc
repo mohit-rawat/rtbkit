@@ -213,7 +213,7 @@ getCreativeCompatibility(const Creative & creative,
 	  std::cerr<<"=================="<<creative.adformat<<std::endl;
 	  getAttr(result, vconf, "duration", crinfo->duration, includeReasons);
 	}
-	if(creative.adformat == "video"||"native"){
+	if(creative.adformat == "video" || creative.adformat == "native"){
 	  getAttr(result, pconf, "crtype", crinfo->crtype, includeReasons);
 	}
 
