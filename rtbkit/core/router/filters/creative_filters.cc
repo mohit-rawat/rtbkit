@@ -87,7 +87,7 @@ struct InitFilters
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::CreativeSegmentsFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::CreativePMPFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::AdformatFilter>();
-        RTBKIT::FilterRegistry::registerFilter<RTBKIT::DurationFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::VideoFilter>();
     }
 
 } initFilters;
