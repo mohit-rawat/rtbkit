@@ -167,13 +167,13 @@ filter(const BidRequest& br, const ExchangeConnector* conn, const ConfigSet& mas
     for(auto i : br.imp){
       result.AssetList[i.id.toString()] = state.AssetList[i.id.toString()];
     }
-    cerr << "AssetList in state in filterpool " <<state.AssetList<< endl;
+/*    cerr << "AssetList in state in filterpool " <<state.AssetList<< endl;
     for(auto i : result){
       cerr << "configentry.name" <<i.name<< endl;
     }
     for(auto i : biddableSpots){
       cerr << "biddablespots :: " <<i.second.toJson()<< endl;
-    }
+    }*/
     return result;
 }
 

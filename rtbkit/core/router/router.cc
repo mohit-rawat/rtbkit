@@ -592,7 +592,7 @@ run()
             double atStart = getTime();
             std::shared_ptr<AugmentationInfo> info;
             while (startBiddingBuffer.tryPop(info)) {
-	      cerr<<"==========check in run==========="<<endl;
+//	      cerr<<"==========check in run==========="<<endl;
                 doStartBidding(info);
             }
 
@@ -1310,7 +1310,7 @@ void
 Router::
 augmentAuction(const std::shared_ptr<AugmentationInfo> & info)
 {
-	      cerr<<"==========check in augmentauction==========="<<endl;
+//	      cerr<<"==========check in augmentauction==========="<<endl;
         auto groupAgents = info->potentialGroups;
     if (!info || !info->auction)
         throw ML::Exception("augmentAuction with no auction to augment");
@@ -1494,7 +1494,7 @@ preprocessAuction(const std::shared_ptr<Auction> & auction)
     recordOutcome(auction->outOfPrepro.secondsSince(auction->inPrepro) * 1000.0,
                   "preprocessAuctionTimeMs");
     info->AssetList = biddableConfigs.AssetList;
-    cerr<<"biddableConfigs.AssetList in router preprcsaucton: "<<biddableConfigs.AssetList<<endl;
+//    cerr<<"biddableConfigs.AssetList in router preprcsaucton: "<<biddableConfigs.AssetList<<endl;
     return info;
 }
 
@@ -1502,7 +1502,7 @@ void
 Router::
 doStartBidding(const std::vector<std::string> & message)
 {
-  cerr<<"==================check in dostartbidding(message)===="<<endl;
+//  cerr<<"==================check in dostartbidding(message)===="<<endl;
     std::shared_ptr<AugmentationInfo> augInfo
         = sharedPtrFromMessage<AugmentationInfo>(message.at(2));
     doStartBidding(augInfo);
@@ -1512,11 +1512,12 @@ void
 Router::
 doStartBidding(const std::shared_ptr<AugmentationInfo> & augInfo)
 {
-    cerr<<"ext before dostartbidng : "<<endl;
+/*    cerr<<"ext before dostartbidng : "<<endl;
     for(auto i : augInfo->auction->request->imp){
       cerr<<i.ext<<endl;
       cout<<"imp.toJson : "<<i.toJson()<<endl;
     }
+*/
     //static const char *fName = "Router::doStartBidding:";
     RouterProfiler profiler(dutyCycleCurrent.nsStartBidding);
 
@@ -1541,11 +1542,11 @@ doStartBidding(const std::shared_ptr<AugmentationInfo> & augInfo)
         AuctionInfo & auctionInfo = addAuction(augInfo->auction,
                                                augInfo->lossTimeout);
         auto auction = augInfo->auction;
-	std::cerr<<"size of biddersmap : "<<auctionInfo.bidders.size()<<std::endl;
-	for (const auto &bidder: auctionInfo.bidders) {
+//	std::cerr<<"size of biddersmap : "<<auctionInfo.bidders.size()<<std::endl;
+/*	for (const auto &bidder: auctionInfo.bidders) {
 	  const auto &agentConfig = bidder.second.agentConfig;
 	  std::cerr<<"agconfg->extrnlid in dostrtbidng : "<<agentConfig->externalId<<std::endl;
-	}
+	}*/
         Date now = Date::now();
 
         auction->inStartBidding = now;
@@ -1744,10 +1745,10 @@ doStartBidding(const std::shared_ptr<AugmentationInfo> & augInfo)
             bidInfo.imp = winner.imp;
 
             auctionInfo.bidders.insert(make_pair(agent, std::move(bidInfo)));  // create empty bid response
-	for (const auto &bidder: auctionInfo.bidders) {
+/*	for (const auto &bidder: auctionInfo.bidders) {
 	  const auto &agentConfig = bidder.second.agentConfig;
 	  std::cerr<<"agconfg->extrnlid in dostrtbidng after insert : "<<agentConfig->externalId<<std::endl;
-	}
+	}*/
             if (!info.trackBidInFlight(auctionId, bidInfo.bidTime))
                 throwException("doStartBidding.agentAlreadyBidding",
                                "agent %s is already processing auction %s",
@@ -1767,8 +1768,8 @@ doStartBidding(const std::shared_ptr<AugmentationInfo> & augInfo)
 
         this->recordLevel(auctionInfo.bidders.size(), "bidRequestsSentToBiddersPerRequest");
 	auctionInfo.auction->AssetList = augInfo->AssetList;
-	cerr<<"augInfo->AssetList : "<<augInfo->AssetList<<endl;
-	cerr<<"auctionInfo.auction->AssetList : "<<auctionInfo.auction->AssetList<<endl;
+//	cerr<<"augInfo->AssetList : "<<augInfo->AssetList<<endl;
+//	cerr<<"auctionInfo.auction->AssetList : "<<auctionInfo.auction->AssetList<<endl;
         if (!auctionInfo.bidders.empty()) {
             bidder->sendAuctionMessage(
                     auctionInfo.auction, timeLeftMs, auctionInfo.bidders);
@@ -1790,11 +1791,11 @@ doStartBidding(const std::shared_ptr<AugmentationInfo> & augInfo)
         if (augInfo)
             augInfo->auction->setError("auction processing error", exc.what());
     }
-    cerr<<"ext in dostartbidng : "<<endl;
+/*    cerr<<"ext in dostartbidng : "<<endl;
     for(auto i : augInfo->auction->request->imp){
       cerr<<i.ext<<endl;
       cout<<"imp.toJson : "<<i.toJson()<<endl;
-    }
+    }*/
 }
 
 AuctionInfo &
@@ -2428,7 +2429,7 @@ onNewAuction(std::shared_ptr<Auction> auction)
     if (request.userIds.providerId) ++numFields;
 
     auto info = preprocessAuction(auction);
-	      cerr<<"==========check in onnewauction(after filtering)==========="<<endl;
+//	      cerr<<"==========check in onnewauction(after filtering)==========="<<endl;
     if (info) {
         recordHit("auctionPassedPreprocessing");
         augmentAuction(info);

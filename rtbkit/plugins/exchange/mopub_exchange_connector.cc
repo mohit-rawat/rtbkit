@@ -279,7 +279,7 @@ parseBidRequest(HttpAuctionHandler & connection,
   cstr = str_replace(cstr, (char*)"}\"", (char*)"}");
   abc = cstr;
 
-  std::cerr<<"bidstring : "<<abc<<std::endl;
+//  std::cerr<<"bidstring : "<<abc<<std::endl;
     std::shared_ptr<BidRequest> res;
 
     std::shared_ptr<BidRequest> none; 
@@ -414,7 +414,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 
 	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::getExchangeName(res);
-	std::cerr<<"bidrequest : "<<res->toJson()<<std::endl;  
+//	std::cerr<<"bidrequest : "<<res->toJson()<<std::endl;  
     return res;
 }
 
