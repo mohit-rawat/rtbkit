@@ -274,10 +274,13 @@ parseBidRequest(HttpAuctionHandler & connection,
 
   std::string abc = payload;
   char *cstr = &abc[0u];
-  cstr = str_replace(cstr, (char*)"\\", (char*)"");
-  cstr = str_replace(cstr, (char*)"\"{", (char*)"{");
-  cstr = str_replace(cstr, (char*)"}\"", (char*)"}");
-  abc = cstr;
+  char *cstr1;
+  char *cstr2;
+  char *cstr3;
+  cstr1 = str_replace(cstr, (char*)"\\", (char*)"");
+  cstr2 = str_replace(cstr1, (char*)"\"{", (char*)"{");
+  cstr3 = str_replace(cstr2, (char*)"}\"", (char*)"}");
+  abc = cstr3;
 
 //  std::cerr<<"bidstring : "<<abc<<std::endl;
     std::shared_ptr<BidRequest> res;
@@ -307,7 +310,7 @@ parseBidRequest(HttpAuctionHandler & connection,
     // Parse the bid request
     // TODO Check with MoPub if they send the x-openrtb-version header
     // and if they support 2.2 now.
-    ML::Parse_Context context("Bid Request", cstr, abc.size());
+    ML::Parse_Context context("Bid Request", cstr3, abc.size());
     res.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory("2.3")->parseBidRequest(context, exchangeName(), exchangeName()));
 
     // get restrictions enforced by MoPub.
@@ -415,6 +418,9 @@ parseBidRequest(HttpAuctionHandler & connection,
 	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::getExchangeName(res);
 //	std::cerr<<"bidrequest : "<<res->toJson()<<std::endl;  
+	free(cstr1);
+	free(cstr2);
+	free(cstr3);
     return res;
 }
 
