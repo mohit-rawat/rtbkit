@@ -272,15 +272,7 @@ parseBidRequest(HttpAuctionHandler & connection,
                 const HttpHeader & header,
                 const std::string & payload) {
 
-  std::string abc = payload;
-  char *cstr = &abc[0u];
-  char *cstr1;
-  char *cstr2;
-  char *cstr3;
-  cstr1 = str_replace(cstr, (char*)"\\", (char*)"");
-  cstr2 = str_replace(cstr1, (char*)"\"{", (char*)"{");
-  cstr3 = str_replace(cstr2, (char*)"}\"", (char*)"}");
-  abc = cstr3;
+
 
 //  std::cerr<<"bidstring : "<<abc<<std::endl;
     std::shared_ptr<BidRequest> res;
@@ -307,6 +299,15 @@ parseBidRequest(HttpAuctionHandler & connection,
         return none;
     }
 
+	std::string abc = payload;
+	char *cstr = &abc[0u];
+	char *cstr1;
+	char *cstr2;
+	char *cstr3;
+	cstr1 = str_replace(cstr, (char*)"\\", (char*)"");
+	cstr2 = str_replace(cstr1, (char*)"\"{", (char*)"{");
+	cstr3 = str_replace(cstr2, (char*)"}\"", (char*)"}");
+	abc = cstr3;
     // Parse the bid request
     // TODO Check with MoPub if they send the x-openrtb-version header
     // and if they support 2.2 now.
