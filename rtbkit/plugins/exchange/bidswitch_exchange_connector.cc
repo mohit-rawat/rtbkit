@@ -187,7 +187,7 @@ getCreativeCompatibility(const Creative & creative,
          "encrypted win price macro ${AUCTION_PRICE}",
          includeReasons);
 
-    // 2.  Must have creative ID in bidswitch.crid
+    // 2.  Must have creative ID in bidswitch.adid
     getAttr(result, pconf, "adid", crinfo->adid, includeReasons);
     if (!crinfo->adid)
         result.setIncompatible
@@ -195,7 +195,7 @@ getCreativeCompatibility(const Creative & creative,
          includeReasons);
 
 
-    // 3.  Must have AdvertiserDomain in bidswitch.crid
+    // 3.  Must have AdvertiserDomain in bidswitch.adomain
     getAttr(result, pconf, "adomain", crinfo->adomain, includeReasons);
     if (crinfo->adomain.empty())
         result.setIncompatible
@@ -203,7 +203,12 @@ getCreativeCompatibility(const Creative & creative,
          includeReasons);
     // 4.  Must have bidswitch.adm that includes MoPub's macro
     getAttr(result, pconf, "adm", crinfo->adm, includeReasons);
-
+//5.Must have creative.adformat specified
+    crinfo->adformat = creative.adformat;
+    if (crinfo->adformat.empty())
+        result.setIncompatible
+			("creative[].adformat is null",
+			 includeReasons);
     // Cache the information
     result.info = crinfo;
 
@@ -307,14 +312,32 @@ parseBidRequest(HttpAuctionHandler & connection,
         connection.sendErrorResponse("non-JSON request");
         return res;
     }
-
     // Parse the bid request
     ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
     res.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory("2.2")->parseBidRequest(context, exchangeName(), exchangeName()));
 
-	OpenRTBExchangeConnector::getAudienceId(res);
+	for(int i = 0; i< res->imp.size(); i++){
+//operator overloading (for ==)is there for datacratic::optional(struct of native)
+		if(res->imp[i].native == NULL){}else{
+//			res->imp[i].native->request.native.ver = res->imp[i].native->request.ver;
+			res->imp[i].native->request.native.layout = res->imp[i].native->request.layout;
+			res->imp[i].native->request.native.adunit = res->imp[i].native->request.adunit;
+			res->imp[i].native->request.native.context = res->imp[i].native->request.context;
+			res->imp[i].native->request.native.contextsubtype = res->imp[i].native->request.contextsubtype;
+			res->imp[i].native->request.native.plcmttype = res->imp[i].native->request.plcmttype;
+			res->imp[i].native->request.native.plcmtcnt = res->imp[i].native->request.plcmtcnt;
+			res->imp[i].native->request.native.seq = res->imp[i].native->request.seq;
+			res->imp[i].native->request.native.ext = res->imp[i].native->request.ext;
+			for(auto j = res->imp[i].native->request.assets.begin(); j!=res->imp[i].native->request.assets.end(); j++){
+				res->imp[i].native->request.native.assets.push_back(*j);
+			}
+		}
+	}
+//	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::getExchangeName(res);
-    return res;
+//	std::cerr<<"req in bidswitch excon : "<<res->toJson()<<std::endl;
+
+	return res;
 }
 
 
@@ -378,6 +401,70 @@ setSeatBid(Auction const & auction,
     b.adid = crinfo->adid;
     b.adomain = crinfo->adomain;
     b.iurl = cpinfo->iurl;
+
+/***************************************************************/
+	//additional fields required for native	
+/***************************************************************/
+
+/*TODO ----------- Appending video assets------------*/
+
+//no need for admnative field like mopub
+	if(crinfo->adformat == "native"){
+	// Get the nativeConfig data for this creative
+	auto ninfo = creative.nativeConfig;
+
+	b.ext["native"]["link"]["url"] = ninfo["link"]["url"];
+
+	Json::Value AssetList = resp.bidData[spotNum].ext["assetList"];
+
+	Json::Value admAsset(Json::arrayValue);
+		
+//populating title asset
+	if(AssetList.isMember("title")){
+		for(auto i : AssetList["title"].getMemberNames()){
+			Json::Value temptitleAsset;
+			temptitleAsset["id"] = std::stoi(i);
+			for(Json::Value j : ninfo["assets"]["titles"]){
+				if( j["id"].asInt() == AssetList["title"][i].asInt()){
+					temptitleAsset["title"]["text"] = j["text"];
+					break;
+				}
+			};
+			admAsset.append(temptitleAsset);
+		}
+	}
+		
+//populating image assets		
+	if(AssetList.isMember("images")){
+		for(auto i : AssetList["images"].getMemberNames()){
+			Json::Value tempimgAsset;
+			tempimgAsset["id"] = std::stoi(i);
+			for(Json::Value j : ninfo["assets"]["images"]){
+				if( j["id"].asInt() == AssetList["images"][i].asInt()){
+					tempimgAsset["img"]["url"] = j["url"];
+					break;
+				}
+			};
+			admAsset.append(tempimgAsset);
+		}
+	}
+
+//populating data assets
+	if(AssetList.isMember("data")){
+		for(auto i : AssetList["data"].getMemberNames()){
+			Json::Value tempdataAsset;
+			tempdataAsset["id"] = std::stoi(i);
+			for(Json::Value j : ninfo["assets"]["data"]){
+				if( j["id"].asInt() == AssetList["data"][i].asInt()){
+					tempdataAsset["data"]["value"] = j["value"];
+					break;
+				}
+			};
+			admAsset.append(tempdataAsset);
+		}
+	}
+	b.ext["native"]["assets"] = admAsset;
+	}
 }
 
 namespace {

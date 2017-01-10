@@ -88,6 +88,15 @@ struct InitFilters
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::CreativePMPFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::AdformatFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::VideoFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeTitleFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeImageFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeDataFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeVideoFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeContextFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeContextSubtypeFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativePlcmttypeFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeLayoutFilter>();
+		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeAdunitFilter>();
     }
 
 } initFilters;

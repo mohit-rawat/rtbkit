@@ -732,7 +732,16 @@ struct Video {
   struct NativeRequest {
     ~NativeRequest();
     NativeSub native;
-
+//	  Datacratic::UnicodeString ver;
+	  Datacratic::TaggedInt layout;
+	  Datacratic::TaggedInt adunit;
+	  Datacratic::TaggedInt context;
+	  Datacratic::TaggedInt contextsubtype;
+	  Datacratic::TaggedInt plcmttype;
+	  Datacratic::TaggedInt plcmtcnt;
+	  Datacratic::TaggedInt seq;
+	  std::vector<Asset> assets;
+	  Json::Value ext;
   };
 
   struct Native {

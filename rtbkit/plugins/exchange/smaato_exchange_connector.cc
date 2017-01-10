@@ -27,7 +27,7 @@ Logging::Category smaatoExchangeConnectorError("[ERROR] Smaato Exchange Connecto
 namespace RTBKIT  { 
 
 /*****************************************************************************/
-/* MOPUB EXCHANGE CONNECTOR                                                */
+/* SMAATO EXCHANGE CONNECTOR                                                 */
 /*****************************************************************************/
 
 std::string SmaatoExchangeConnector::nobid = "nobid";

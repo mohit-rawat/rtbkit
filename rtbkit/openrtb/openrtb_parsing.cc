@@ -169,6 +169,17 @@ DefaultDescription()
   {
     std::cerr<<"====check parsing 2=="<<std::endl;
     addField("native", &NativeRequest::native, "native object inside native request");
+//not a necessary field and coming as integer in bidswitch request
+//	addField("ver", &NativeRequest::ver, "Version of the Native Markup version in use");
+    addField("layout", &NativeRequest::layout, "The Layout ID of the native ad unit");
+    addField("adunit", &NativeRequest::adunit, "The Ad unit ID of the native ad unit");
+    addField("context", &NativeRequest::context, "The context in which the ad appears");
+    addField("contextsubtype", &NativeRequest::contextsubtype, "A more detailed context in which the ad appears");
+    addField("plcmttype", &NativeRequest::plcmttype, "The design/format/layout of the ad unit being offered");
+    addField("plcmtcnt", &NativeRequest::plcmtcnt, "The number of identical placements in this Layout");
+    addField("seq", &NativeRequest::seq, "0 for the first ad, 1 for the second ad, and so on");
+    addField("assets", &NativeRequest::assets, "array of Asset objects");
+    addField("ext", &NativeRequest::ext, "Placeholder for exchange-specific extensions to OpenRTB");
   }
 
   DefaultDescription<OpenRTB::NativeSub>::

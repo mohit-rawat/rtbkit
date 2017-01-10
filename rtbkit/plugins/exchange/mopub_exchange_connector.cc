@@ -210,7 +210,6 @@ getCreativeCompatibility(const Creative & creative,
 		getAttr(result, pconf, "bundle", crinfo->bundle, includeReasons);
 	}
 	if(creative.adformat == "video"){
-	  std::cerr<<"=================="<<creative.adformat<<std::endl;
 	  getAttr(result, vconf, "duration", crinfo->duration, includeReasons);
 	}
 	if(creative.adformat == "video" || creative.adformat == "native"){
@@ -272,8 +271,6 @@ parseBidRequest(HttpAuctionHandler & connection,
                 const HttpHeader & header,
                 const std::string & payload) {
 
-
-
 //  std::cerr<<"bidstring : "<<abc<<std::endl;
     std::shared_ptr<BidRequest> res;
 
@@ -308,6 +305,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 	cstr2 = str_replace(cstr1, (char*)"\"{", (char*)"{");
 	cstr3 = str_replace(cstr2, (char*)"}\"", (char*)"}");
 	abc = cstr3;
+	
     // Parse the bid request
     // TODO Check with MoPub if they send the x-openrtb-version header
     // and if they support 2.2 now.
@@ -454,7 +452,7 @@ setSeatBid(Auction const & auction,
 
     // Get the exchange specific data for this creative
     auto crinfo = creative.getProviderData<CreativeInfo>(en);
-
+	
     // Find the index in the seats array
     int seatIndex = 0;
     while(response.seatbid.size() != seatIndex) {
@@ -475,6 +473,8 @@ setSeatBid(Auction const & auction,
     seatBid.bid.emplace_back();
     auto & b = seatBid.bid.back();
 
+//	std::cerr<<"resp--------"<<resp.toJson()<<std::endl;
+//	std::cerr<<"biddata-----"<<resp.bidData.toJsonStr()<<std::endl;
     // Put in the variable parts
     b.cid = Id(resp.agent);
     b.id = Id(auction.id, auction.request->imp[0].id);
@@ -487,14 +487,79 @@ setSeatBid(Auction const & auction,
     b.nurl = crinfo->nurl;
 	b.bundle = crinfo->bundle;
 	b.cat = crinfo->cat;
-	int j = 0;
-	for(auto i:crinfo->imptrackers){
-		b.ext["imptrackers"][j] = i;
-		j++;
-	};
+
 	b.ext["crtype"] = crinfo->crtype;
 	b.ext["duration"] = crinfo->duration;
 	b.psattr = crinfo->attr;
+
+	int j = 0;
+	if(b.ext["crtype"] == "native"){
+		for(auto i:crinfo->imptrackers){
+			b.ext["admnative"]["native"]["imptrackers"][j] = i;
+			j++;
+		};
+	}else{
+		for(auto i:crinfo->imptrackers){
+			b.ext["imptrackers"][j] = i;
+			j++;
+		};
+	};
+//additional fields required for native	
+	if(b.ext["crtype"] == "native"){
+		// Get the nativeConfig data for this creative
+		auto ninfo = creative.nativeConfig;
+		Json::Value AssetList = resp.bidData[spotNum].ext["assetList"];
+
+		b.ext["admnative"]["native"]["link"]["url"] = ninfo["link"]["url"];
+
+		Json::Value admAsset(Json::arrayValue);
+		
+//populating title asset
+		if(AssetList.isMember("title")){
+			for(auto i : AssetList["title"].getMemberNames()){
+				Json::Value temptitleAsset;
+				temptitleAsset["id"] = std::stoi(i);
+				for(Json::Value j : ninfo["assets"]["titles"]){
+					if( j["id"].asInt() == AssetList["title"][i].asInt()){
+						temptitleAsset["title"]["text"] = j["text"];
+						break;
+					}
+				};
+				admAsset.append(temptitleAsset);
+			}
+		}
+
+//populating image assets		
+		if(AssetList.isMember("images")){
+			for(auto i : AssetList["images"].getMemberNames()){
+				Json::Value tempimgAsset;
+				tempimgAsset["id"] = std::stoi(i);
+				for(Json::Value j : ninfo["assets"]["images"]){
+					if( j["id"].asInt() == AssetList["images"][i].asInt()){
+						tempimgAsset["img"]["url"] = j["url"];
+						break;
+					}
+				};
+				admAsset.append(tempimgAsset);
+			}
+		}
+
+//populating data assets
+		if(AssetList.isMember("data")){
+			for(auto i : AssetList["data"].getMemberNames()){
+				Json::Value tempdataAsset;
+				tempdataAsset["id"] = std::stoi(i);
+				for(Json::Value j : ninfo["assets"]["data"]){
+					if( j["id"].asInt() == AssetList["data"][i].asInt()){
+						tempdataAsset["data"]["value"] = j["value"];
+						break;
+					}
+				};
+				admAsset.append(tempdataAsset);
+			}
+		}
+		b.ext["admnative"]["native"]["assets"] = admAsset;
+	}
 }
 
 template <typename T>
@@ -552,13 +617,6 @@ using namespace RTBKIT;
 struct AtInit {
     AtInit() {
         ExchangeConnector::registerFactory<MoPubExchangeConnector>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeTitleLengthFilter>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeImageFilter>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeDataFilter>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeVideoFilter>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeContextFilter>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeContextSubtypeFilter>();
-	RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativePlcmttypeFilter>();
     }
 } atInit;
 }

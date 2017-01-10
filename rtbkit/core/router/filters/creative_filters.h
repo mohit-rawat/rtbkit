@@ -95,6 +95,10 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 			if(spot.banner){
 				return true;	
 			}else{return false;}
+		}else if (creative.adformat=="native"){
+			if(spot.native){
+				return true;	
+			}else{return false;}
 		}else{
 			return true;
 		}
@@ -102,39 +106,37 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 };
 
 /******************************************************************************/
-/* NATIVE TITLELENGTH FILTER                                                  */
+/* NATIVE TITLE FILTER                                                        */
 /******************************************************************************/
 
-  struct NativeTitleLengthFilter : public IterativeCreativeFilter<NativeTitleLengthFilter>
+  struct NativeTitleFilter : public IterativeCreativeFilter<NativeTitleFilter>
   {
-    static constexpr const char *name = "NativeTitleLengthFilter";
+    static constexpr const char *name = "NativeTitleFilter";
     unsigned priority() const { return 0xF303; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
-      int length = creative.nativeConfig["assets"]["title"]["len"].asInt();
+		if(spot.native){
       //      if (creative.adformat=="native"){
-      if(spot.native){
-	std::cerr<<"====1===="<<std::endl;
-	for(auto asset : spot.native->request.native.assets){
-	  if(asset.title){
-	    std::cerr<<"====2===="<<std::endl;
-	    if(asset.required.val == true){
-	      std::cerr<<"====3===="<<std::endl;
-	      if(length <= asset.title->len.val){
-		std::cerr<<"req.len = "<<asset.title->len.val<<std::endl;
-		std::cerr<<"config.len = "<<length<<std::endl;
-		return true;
-	      }else{return false;}
-	    }
-	    else{
-	      return true;
-	    }
-	  }
+			std::cerr<<"====1===="<<std::endl;
+			for(auto asset : spot.native->request.native.assets){
+				if(asset.title){
+					if(asset.required.val == true){
+						std::cerr<<"====2===="<<std::endl;
+						for(auto i : creative.nativeConfig["assets"]["titles"]){
+							int length = i["len"].asInt();
+							std::cerr<<"====3===="<<std::endl;
+							if(length <= asset.title->len.val){
+								std::cerr<<"req.len = "<<asset.title->len.val<<std::endl;
+								std::cerr<<"config.len = "<<length<<std::endl;
+								state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)]["title"][std::to_string(asset.id.val)] = i["id"];
+								return true;
+							};
+						}return false;
+					}
+				}
+			}
+		}return true;
 	}
-      }else{
-	return true;
-      }return true;
-    }
   };
 
   /******************************************************************************/
@@ -166,7 +168,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		if(unused[i] == true && asset.img->type.val == imageassets[i]["type"].asInt() && ((asset.img->w.val == imageassets[i]["w"].asInt()) || ((asset.img->wmin.val != -1) && (asset.img->wmin.val <= imageassets[i]["w"].asInt()))) && ((asset.img->h.val == imageassets[i]["h"].asInt()) || ((asset.img->hmin.val != -1) && (asset.img->hmin.val <= imageassets[i]["h"].asInt()))) && ((asset.img->mimes).empty() || (std::find(asset.img->mimes.begin(), asset.img->mimes.end(), imageassets[i]["mimetype"].asString()) != asset.img->mimes.end()))){
 		  std::cerr<<"====5===="<<std::endl;
 		  unused[i] = false;
-		  state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)][std::to_string(asset.id.val)] = imageassets[i]["id"]; 
+		  state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)]["images"][std::to_string(asset.id.val)] = imageassets[i]["id"]; 
 		  std::cerr<<"====6===="<<std::endl;
 		  break;
 		}
@@ -210,7 +212,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		if(unused[i] == true && asset.data->type.val == dataassets[i]["type"].asInt() && ((asset.data->len.val == -1) ||  asset.data->len.val >= dataassets[i]["len"].asInt())){
 			std::cerr<<"====5===="<<std::endl;
 			unused[i] = false;
-			state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)][std::to_string(asset.id.val)] = dataassets[i]["id"];
+			state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)]["data"][std::to_string(asset.id.val)] = dataassets[i]["id"];
 			break;
 		}
 	      }
@@ -257,6 +259,54 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     }
   };
 
+	/******************************************************************************/
+	/* NATIVE LAYOUT FILTER                                                      */
+	/******************************************************************************/
+
+	struct NativeLayoutFilter : public IterativeCreativeFilter<NativeLayoutFilter>
+	{
+		static constexpr const char *name = "NativeLayoutFilter";
+		unsigned priority() const { return 0xF302; }
+		bool filterCreative(FilterState &state, const AdSpot &spot,
+							const AgentConfig &config, const Creative &creative) const{
+			if(spot.native){
+				std::cerr<<"====1===="<<std::endl;
+				if(creative.nativeConfig["layout"].asInt()){
+					if(spot.native->request.native.layout.val == creative.nativeConfig["layout"].asInt()){
+						return true;
+					}else{return false;}
+				}else{return true;}
+			}else{
+				return true;
+			}return true;
+		}
+	};
+
+  /******************************************************************************/
+  /* NATIVE ADUNIT FILTER                                                       */
+  /******************************************************************************/
+
+	struct NativeAdunitFilter : public IterativeCreativeFilter<NativeAdunitFilter>
+	{
+		static constexpr const char *name = "NativeAdunitFilter";
+		unsigned priority() const { return 0xF302; }
+		bool filterCreative(FilterState &state, const AdSpot &spot,
+							const AgentConfig &config, const Creative &creative) const{
+			if(spot.native){
+				std::cerr<<"====1===="<<std::endl;
+				if(creative.nativeConfig["adunit"].asInt()){
+					std::cerr<<"req.adu : "<<spot.native->request.native.adunit.val<<std::endl;
+					std::cerr<<"config.adu : "<< creative.nativeConfig["adunit"].asInt()<<std::endl;
+					if(spot.native->request.native.adunit.val == creative.nativeConfig["adunit"].asInt()){
+						return true;
+					}else{return false;}
+				}else{return true;}
+			}else{
+				return true;
+			}return true;
+		}
+	};	
+	
   /******************************************************************************/
   /* NATIVE CONTEXT FILTER                                                      */
   /******************************************************************************/

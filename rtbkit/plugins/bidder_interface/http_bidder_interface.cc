@@ -273,7 +273,6 @@ void HttpBidderInterface::sendAuctionMessage(std::shared_ptr<Auction> const & au
                                  }
                                  theBid.priority = bid.ext["priority"].asDouble();
 
-
                                  tie(agent, config) = findAgent(externalId);
                                  if (config == nullptr) {
                                      LOG(error) << "Couldn't find config for externalId: " << externalId << std::endl;
@@ -324,7 +323,8 @@ void HttpBidderInterface::sendAuctionMessage(std::shared_ptr<Auction> const & au
 
                              theBid.creativeIndex = creativeIndex;
                              theBid.price = USD_CPM(bid.price.val);
-
+							 theBid.ext["assetList"] = bid.ext["assetList"];
+							 
                              int spotIndex = indexOf(openRtbRequest.imp,
                                                     &OpenRTB::Impression::id, bid.impid);
                              if (spotIndex == -1) {
@@ -375,7 +375,7 @@ void HttpBidderInterface::sendWinLossMessage(
             int statusCode, const std::string &, std::string &&body)
         {
             if (errorCode != HttpClientError::None) {
-                 LOG(error) << "Error requesting "
+				LOG(error) << "Error requesting "
                             << adserverHost << ":" << adserverWinPort
                             << " (" << httpErrorString(errorCode) << ")" << std::endl;
                  recordError("network");
@@ -442,7 +442,7 @@ void HttpBidderInterface::sendCampaignEventMessage(
             int statusCode, const std::string &, std::string &&body)
         {
             if (errorCode != HttpClientError::None) {
-                 LOG(error) << "Error requesting "
+				LOG(error) << "Error requesting "
                             << adserverHost << ":" << adserverEventPort
                             << " (" << httpErrorString(errorCode) << ")" << std::endl;
                  recordError("network");
@@ -491,7 +491,7 @@ void HttpBidderInterface::sendBidErrorMessage(
             int statusCode, const std::string &, std::string &&body)
         {
             if (errorCode != HttpClientError::None) {
-                 LOG(error) << "Error requesting "
+				LOG(error) << "Error requesting "
                             << adserverHost << ":" << adserverErrorPort
                             << " (" << httpErrorString(errorCode) << ")" << std::endl;
                  recordError("network");
