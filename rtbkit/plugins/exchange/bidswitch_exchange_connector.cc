@@ -339,7 +339,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 			}
 		}
 	}
-//	OpenRTBExchangeConnector::getAudienceId(res);
+	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::getExchangeName(res);
 //	std::cerr<<"req in bidswitch excon : "<<res->toJson()<<std::endl;
 	string temp = changeCountryCode(res->location.countryCode);
