@@ -40,6 +40,12 @@ BidSwitchExchangeConnector(ServiceBase & owner, const std::string & name)
     this->auctionResource = "/auctions";
     this->auctionVerb = "POST";
     init();
+	
+	as_config_init(&config);
+	config.hosts[0].addr = "127.0.0.1";
+	config.hosts[0].port = 3000;
+	aerospike_init(&as, &config);
+	aerospike_connect(&as, &err);
 }
 
 BidSwitchExchangeConnector::
@@ -336,10 +342,32 @@ parseBidRequest(HttpAuctionHandler & connection,
 //	OpenRTBExchangeConnector::getAudienceId(res);
 	OpenRTBExchangeConnector::getExchangeName(res);
 //	std::cerr<<"req in bidswitch excon : "<<res->toJson()<<std::endl;
-
+	string temp = changeCountryCode(res->location.countryCode);
+	res->location.countryCode = temp;
 	return res;
 }
 
+ 	as_error err;
+	as_config config;
+	aerospike as;
+	
+	
+std::string
+BidSwitchExchangeConnector::
+changeCountryCode(std::string cc2){
+	std::string cc3;
+	as_key key;
+	as_key_init_str(&key, "config", "locationMappingSet", cc2.c_str());
+	as_record* p_rec = NULL;
+	std::string val = "val";
+	if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) != AEROSPIKE_OK) {
+		fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
+	}else{
+		cc3 = as_record_get_str(p_rec, val.c_str());
+	}
+	as_record_destroy(p_rec);
+	return cc3;
+}
 
 void
 BidSwitchExchangeConnector::

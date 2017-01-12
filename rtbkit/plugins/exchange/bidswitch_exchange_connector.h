@@ -99,6 +99,8 @@ struct BidSwitchExchangeConnector: public OpenRTBExchangeConnector {
                             int spotNum,
                             OpenRTB::BidResponse & response) const;
 
+	std::string changeCountryCode(std::string cc2);
+
     void init();
 };
 
