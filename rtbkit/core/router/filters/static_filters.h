@@ -215,10 +215,11 @@ struct OperatingSystemFilter : public FilterBaseT<OperatingSystemFilter>
 
     void filter(FilterState& state) const
     {
+		std::string os = state.request.device->os.utf8String()+" "+state.request.device->osv.utf8String();
 		if(state.request.device ==NULL){
 			state.narrowConfigs(impl.filter("noos"));
 		}else{
-			state.narrowConfigs(impl.filter(state.request.device->os.utf8String()));
+			state.narrowConfigs(impl.filter(os));
 		}
     }
 
