@@ -152,7 +152,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 	
 //replacing carriername from aerospike
 	if(result->device != NULL){
-		std::string exNet = result->exchange + result->device->carrier.utf8String();
+		std::string exNet = result->exchange + " " + result->device->carrier.utf8String();
 		result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
 	}
 	

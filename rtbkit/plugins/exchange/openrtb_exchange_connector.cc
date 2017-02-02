@@ -449,7 +449,7 @@ getIMEIcode(std::shared_ptr<BidRequest> res)
   std::string
   OpenRTBExchangeConnector::
   changeNetworkName(std::string exnet){
-	  std::string newnet = exnet;
+	  std::string newnet = "/";
 	  as_key key;
 	  as_key_init_str(&key, "config", "networkSet", exnet.c_str());
 	  as_record* p_rec = NULL;
