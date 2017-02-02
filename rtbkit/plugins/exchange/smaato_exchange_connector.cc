@@ -149,9 +149,12 @@ parseBidRequest(HttpAuctionHandler & connection,
             }
         }
     }
-    
-	std::string exNet = result->exchange + result->device->carrier.utf8String();
-	result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
+	
+//replacing carriername from aerospike
+	if(result->device != NULL){
+		std::string exNet = result->exchange + result->device->carrier.utf8String();
+		result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
+	}
 	
 	OpenRTBExchangeConnector::getAudienceId(result);
 
