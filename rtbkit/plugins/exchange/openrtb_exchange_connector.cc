@@ -446,6 +446,22 @@ getIMEIcode(std::shared_ptr<BidRequest> res)
   {
 	  res->ext["exchange"] = res->exchange;
   }
+  std::string
+  OpenRTBExchangeConnector::
+  changeNetworkName(std::string exnet){
+	  std::string newnet = exnet;
+	  as_key key;
+	  as_key_init_str(&key, "config", "networkSet", exnet.c_str());
+	  as_record* p_rec = NULL;
+	  std::string val = "val";
+	  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) != AEROSPIKE_OK) {
+		  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
+	  }else{
+		  newnet = as_record_get_str(p_rec, val.c_str());
+	  }
+	  as_record_destroy(p_rec);
+	  return newnet;
+  }
 
 } // namespace RTBKIT
 

@@ -68,6 +68,8 @@ struct OpenRTBExchangeConnector : public HttpExchangeConnector {
 
 	void getExchangeName(std::shared_ptr<BidRequest> res);
 
+	std::string changeNetworkName(std::string exnet);
+
 private:
 
     virtual Json::Value

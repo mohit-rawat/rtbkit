@@ -49,6 +49,7 @@ struct SmaatoExchangeConnector: public OpenRTBExchangeConnector {
     
     struct CampaignInfo {
       Id seat;                ///< ID of the exchange seat
+      std::string iurl; ///< Image URL for content checking
     };
 
     virtual ExchangeCompatibility

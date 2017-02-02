@@ -150,8 +150,9 @@ parseBidRequest(HttpAuctionHandler & connection,
         }
     }
     
-
-
+	std::string exNet = result->exchange + result->device->carrier.utf8String();
+	result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
+	
 	OpenRTBExchangeConnector::getAudienceId(result);
 
 	OpenRTBExchangeConnector::getExchangeName(result);
@@ -187,7 +188,19 @@ getCampaignCompatibility(const AgentConfig & config,
 	   + exc.what(), includeReasons);
         return result;
     }
-    
+
+	try {
+        cpinfo->iurl = pconf["iurl"].asString();
+        if (!cpinfo->iurl.size())
+            result.setIncompatible("providerConfig.mopub.iurl is null",
+                                   includeReasons);
+    } catch (const std::exception & exc) {
+        result.setIncompatible
+			(string("providerConfig.mopub.iurl parsing error: ")
+			 + exc.what(), includeReasons);
+        return result;
+    }
+	
     result.info = cpinfo;
     return result;
   }
