@@ -19,6 +19,8 @@
 #include <unordered_map>
 #include <mutex>
 
+#include "aerospike/as_config.h"
+#include "aerospike/aerospike_key.h"
 
 using namespace std;
 
@@ -64,6 +66,11 @@ private:
 
 };
 
+	as_error err;
+	as_config config;
+	aerospike as;
+
+	
 /******************************************************************************/
 /* FREQUENCY CAP AUGMENTOR                                                    */
 /******************************************************************************/
@@ -83,6 +90,11 @@ FrequencyCapAugmentor(
     palEvents(getZmqContext())
 {
     recordHit("up");
+	as_config_init(&config);
+	config.hosts[0].addr = "127.0.0.1";
+	config.hosts[0].port = 3000;
+	aerospike_init(&as, &config);
+	aerospike_connect(&as, &err);
 }
 
 
@@ -122,6 +134,14 @@ init()
     addSource("FrequencyCapAugmentor::palEvents", palEvents);
 }
 
+	typedef unsigned long long timestamp_t;
+	static timestamp_t
+	get_timestamp ()
+	{
+		struct timeval now;
+		gettimeofday (&now, NULL);
+		return  now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
+	}	
 
 /** Augments the bid request with our frequency cap information.
 
@@ -133,11 +153,13 @@ RTBKIT::AugmentationList
 FrequencyCapAugmentor::
 onRequest(const RTBKIT::AugmentationRequest& request)
 {
+	timestamp_t t0 = get_timestamp();
+	std::cout<<"now at onrequest start : "<<Date::now().fractionalSeconds()<<std::endl;
     recordHit("requests");
 
     RTBKIT::AugmentationList result;
 
-    const RTBKIT::UserIds& uids = request.bidRequest->userIds;
+//    const RTBKIT::UserIds& uids = request.bidRequest->userIds;
 
     for (const string& agent : request.agents) {
 
@@ -154,8 +176,11 @@ onRequest(const RTBKIT::AugmentationRequest& request)
 
         const RTBKIT::AccountKey& account = config.config->account;
 
-        size_t count = storage->get(account, uids);
-
+		std::string temp = request.bidRequest->ext["audience"].asString()+ "_" + std::to_string(config.config->externalId); 
+		std::cout<<"account + uids : "<<temp<<std::endl;
+//        size_t count = storage->get(account, uids);
+		size_t count = getCountAs(temp);
+		
         /* The number of times a user has been seen by a given agent can be
            useful to make bid decisions so attach this data to the bid
            request.
@@ -172,15 +197,42 @@ onRequest(const RTBKIT::AugmentationRequest& request)
            capping.
         */
         if (count < getCap(request.augmentor, agent, config)) {
+			std::cout<<"count < cap"<<std::endl;
             result[account].tags.insert("pass-frequency-cap-ex");
             recordHit("accounts." + account[0] + ".passed");
         }
-        else recordHit("accounts." + account[0] + ".capped");
+        else{
+			recordHit("accounts." + account[0] + ".capped");
+			std::cout<<"count > cap"<<std::endl;
+		}
     }
-
+	timestamp_t t1 = get_timestamp();
+	double secs = (t1 - t0) / 1000000.0L;
+	std::cout<<"time taken : "<<secs<<std::endl;
     return result;
 }
 
+/*Returns the impression count from aerospike for for a particular
+  user for a specific campaign.
+*/
+size_t
+FrequencyCapAugmentor::
+getCountAs(std::string uidcid)
+{
+	int impcount = 0;;
+	as_key key;
+	as_key_init_str(&key, "audience", "capping", uidcid.c_str());
+	as_record* p_rec = NULL;
+	std::string val = "imp";
+	if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) != AEROSPIKE_OK) {
+		fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
+	}else{
+		impcount = as_record_get_int64(p_rec, val.c_str(), 0);
+	}
+	as_record_destroy(p_rec);
+	return impcount;
+}
+	
 
 /** Returns the frequency cap configured by the agent.
 

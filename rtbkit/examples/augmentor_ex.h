@@ -40,7 +40,7 @@ struct AgentConfigEntry;
       augmentor.
     - FrequencyCapStorage for its simplistic data repository.
 
- */
+*/
 struct FrequencyCapAugmentor :
     public RTBKIT::SyncAugmentor
 {
@@ -56,7 +56,7 @@ private:
 
     virtual RTBKIT::AugmentationList
     onRequest(const RTBKIT::AugmentationRequest& request);
-
+	size_t getCountAs(std::string temp);
     size_t getCap(
             const std::string& augmentor,
             const std::string& agent,
