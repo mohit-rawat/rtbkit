@@ -94,13 +94,13 @@ namespace RTBKIT  {
 			return none;
 		}
 
-		// Check that it's version 2.0
+		// Check that it's version 2.3
 		std::string openRtbVersion = it->second;
-/*		if (openRtbVersion != "2.0") {
-			connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.0 of the OpenRTB protocol but requested " + openRtbVersion);
+		if (openRtbVersion != "2.3") {
+			connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.3 of the OpenRTB protocol but requested " + openRtbVersion);
 			return none;
 		}
-*/
+
 		if(payload.empty()) {
 			this->recordHit("error.emptyBidRequest");
 			connection.sendErrorResponse("EMPTY_BID_REQUEST", "The request is empty");
