@@ -252,8 +252,6 @@ namespace RTBKIT  {
 		const Json::Value & pconf = creative.providerConfig["adx"];
     
 		getAttr(result, pconf, "adm", crinfo->adm, includeReasons);
-		getAttr(result, pconf, "nurl", crinfo->nurl, includeReasons);
-		getAttr(result, pconf, "adid", crinfo->adid, includeReasons);
 		getAttr(result, pconf, "adomain", crinfo->adomain, includeReasons);
 //		getAttr(result, pconf, "mimeTypes", crinfo->mimeTypes, includeReasons);
 		getAttr(result, pconf, "cat", crinfo->cat, includeReasons);
@@ -357,20 +355,25 @@ namespace RTBKIT  {
 		auto & b = seatBid.bid.back();
 
 		// Put in the variable parts
-		b.cid = Id(resp.agent);
+		std::string cid  = auction.request->imp[spotNum].ext["billing_id"][0].toStringNoNewLine();
+		std::string cid2 = cid.substr(1,cid.length()-2);
+		b.cid = Id(cid2);
 		b.id = Id(auction.id, auction.request->imp[0].id);
 		b.impid = auction.request->imp[spotNum].id;
 		b.price.val = getAmountIn<CPM>(resp.price.maxPrice);
 		b.adm = crinfo->adm;
 		b.adomain = crinfo->adomain;
-		b.nurl = crinfo->nurl;
 		b.crid = crinfo->crid;
-//		b.psattr = crinfo->attr;
+		b.w = creative.format.width;
+		b.h = creative.format.height;
 		int j = 0;
 		for(auto i:crinfo->impression_tracking_url){
-			b.ext["impression_tracking_url"][j] = i;
-			j++;
+		  //		  i.replace(i.find("${AUCTION_IMP_ID}"), 17, b.impid.toString());
+		  i.replace(i.find("${AUCTION_ID}"), 13, b.id.toString().substr(0, b.id.toString().length()-2));
+		  b.ext["impression_tracking_url"][j] = i;
+		  j++;
 		};
+		response.cur = "USD";
 	}
 
 } // namespace RTBKIT
