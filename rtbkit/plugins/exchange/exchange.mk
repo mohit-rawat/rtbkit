@@ -14,6 +14,7 @@ $(eval $(call library,rubicon_exchange,rubicon_exchange_connector.cc,openrtb_exc
 $(eval $(call library,mopub_exchange,mopub_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,smaato_exchange,smaato_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,mobfox_exchange,mobfox_exchange_connector.cc,openrtb_exchange))
+$(eval $(call library,pubnative_exchange,pubnative_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,bidswitch_exchange,bidswitch_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,nexage_exchange,nexage_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,appnexus_exchange,appnexus_exchange_connector.cc,exchange bid_test_utils appnexus_bid_request))
