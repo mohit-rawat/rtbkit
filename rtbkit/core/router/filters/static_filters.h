@@ -211,6 +211,7 @@ struct OperatingSystemFilter : public FilterBaseT<OperatingSystemFilter>
     void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
     {
         impl.setIncludeExclude(configIndex, value, config.operatingSystemFilter);
+		std::cout<<"==================account tostring=========================== : "<<config.account.toString()<<std::endl;
     }
 
     void filter(FilterState& state) const
@@ -394,34 +395,6 @@ private:
 		IncludeExcludeFilter<BaseFilter> impl;
 	};
 
-/******************************************************************************/
-/* OSVERSION FILTER                                                           */
-/******************************************************************************/
-
-	struct OsversionFilter : public FilterBaseT<OsversionFilter>
-	{
-		static constexpr const char* name = "Osversion";
-		unsigned priority() const { return 10; }
-
-		void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
-			{
-				impl.setIncludeExclude(configIndex, value, config.osversionFilter);
-			}
-
-		void filter(FilterState& state) const
-			{
-				if(state.request.device ==NULL){
-					state.narrowConfigs(impl.filter("noosversion"));
-				}else{
-					state.narrowConfigs(impl.filter(state.request.device->osv.utf8String()));
-				}
-			}
-
-	private:
-		typedef RegexFilter<boost::regex, std::string> BaseFilter;
-		IncludeExcludeFilter<BaseFilter> impl;
-	};
-	
 /******************************************************************************/
 /* LOCATION FILTER                                                            */
 /******************************************************************************/

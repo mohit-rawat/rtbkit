@@ -1218,6 +1218,7 @@ struct BidRequest {
     std::vector<std::string> cur;                ///< Allowable currencies
     Datacratic::List<ContentCategory> bcat;        ///< Blocked advertiser categories (table 6.1)
     std::vector<Datacratic::UnicodeString> badv;           ///< Blocked advertiser domains
+    std::vector<Datacratic::UnicodeString> bapp;           ///< Block list of applications by their platform-specific exchangeindependent application identifiers
     Datacratic::Optional<Regulations> regs; ///< Regulations Object list (OpenRTB 2.2)
     Json::Value ext;                   ///< Protocol extensions
     Json::Value unparseable;           ///< Unparseable fields get put here

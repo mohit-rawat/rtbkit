@@ -83,11 +83,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     bool filterCreative(FilterState &state, const AdSpot &spot,
                         const AgentConfig &config, const Creative &creative) const{
 //		std::cerr<<"creativematrix-- : "<<state.creatives(impIndex).print()<<std::endl;
-        for (const auto& format : spot.formats){
-			std::cerr<<"format-- : "<<format.print()<<std::endl;
-		};
 		if(creative.adformat=="video"){
-			std::cerr<<"checking"<<std::endl;
 			if(spot.video){
 				return true;
 			}else{return false;};	
@@ -165,7 +161,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		  return false;
 
 		};
-		if(unused[i] == true && asset.img->type.val == imageassets[i]["type"].asInt() && ((asset.img->w.val == imageassets[i]["w"].asInt()) || ((asset.img->wmin.val != -1) && (asset.img->wmin.val <= imageassets[i]["w"].asInt()))) && ((asset.img->h.val == imageassets[i]["h"].asInt()) || ((asset.img->hmin.val != -1) && (asset.img->hmin.val <= imageassets[i]["h"].asInt()))) && ((asset.img->mimes).empty() || (std::find(asset.img->mimes.begin(), asset.img->mimes.end(), imageassets[i]["mimetype"].asString()) != asset.img->mimes.end()))){
+		if(unused[i] == true && asset.img->type.val == imageassets[i]["typeId"].asInt() && ((asset.img->w.val == imageassets[i]["width"].asInt()) || ((asset.img->wmin.val != -1) && (asset.img->wmin.val <= imageassets[i]["width"].asInt()))) && ((asset.img->h.val == imageassets[i]["height"].asInt()) || ((asset.img->hmin.val != -1) && (asset.img->hmin.val <= imageassets[i]["height"].asInt()))) && ((asset.img->mimes).empty() || (std::find(asset.img->mimes.begin(), asset.img->mimes.end(), imageassets[i]["mimetype"].asString()) != asset.img->mimes.end()))){
 		  std::cerr<<"====5===="<<std::endl;
 		  unused[i] = false;
 		  state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)]["images"][std::to_string(asset.id.val)] = imageassets[i]["id"]; 
@@ -209,7 +205,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		  std::cerr<<"====4===="<<std::endl;
 		  return false;
 		};
-		if(unused[i] == true && asset.data->type.val == dataassets[i]["type"].asInt() && ((asset.data->len.val == -1) ||  asset.data->len.val >= dataassets[i]["len"].asInt())){
+		if(unused[i] == true && asset.data->type.val == dataassets[i]["typeId"].asInt() && ((asset.data->len.val == -1) ||  asset.data->len.val >= dataassets[i]["length"].asInt())){
 			std::cerr<<"====5===="<<std::endl;
 			unused[i] = false;
 			state.AssetList[spot.id.toString()][std::to_string((int)(config.externalId))][std::to_string(creative.id)]["data"][std::to_string(asset.id.val)] = dataassets[i]["id"];

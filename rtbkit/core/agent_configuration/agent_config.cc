@@ -592,8 +592,6 @@ createFromJson(const Json::Value & json)
             newConfig.siteidFilter.fromJson(*it, "siteidFilter");
         else if (it.memberName() == "connectiontypeFilter")
             newConfig.connectiontypeFilter.fromJson(*it, "connectiontypeFilter");
-        else if (it.memberName() == "osversionFilter")
-            newConfig.osversionFilter.fromJson(*it, "osversionFilter");
         else if (it.memberName() == "exchangeFilter")
             newConfig.exchangeFilter.fromJson(*it, "exchangeFilter");
         else if (it.memberName() == "latLongDevFilter")
@@ -785,8 +783,6 @@ toJson(bool includeCreatives) const
         result["siteidFilter"] = siteidFilter.toJson();
     if (!connectiontypeFilter.empty())
         result["connectiontypeFilter"] = connectiontypeFilter.toJson();
-    if (!osversionFilter.empty())
-        result["osversionFilter"] = osversionFilter.toJson();
     if (!exchangeFilter.empty())
         result["exchangeFilter"] = exchangeFilter.toJson();
     if (!latLongDevFilter.empty())

@@ -50,6 +50,7 @@ DefaultDescription()
     addField("cur", &BidRequest::cur, "List of acceptable currencies to bid in");
     addField("bcat", &BidRequest::bcat, "Blocked advertiser content categories");
     addField("badv", &BidRequest::badv, "Blocked adversiser domains");
+    addField("bapp", &BidRequest::bapp, "Blocked applocations");
     addField("regs", &BidRequest::regs, "Legal regulations");
     addField("ext", &BidRequest::ext, "Extended fields outside of protocol");
     addField("unparseable", &BidRequest::unparseable, "Unparseable fields are collected here");

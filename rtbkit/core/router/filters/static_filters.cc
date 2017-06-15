@@ -335,7 +335,6 @@ struct InitFilters
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::AppidFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::SiteidFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::ConnectiontypeFilter>();
-        RTBKIT::FilterRegistry::registerFilter<RTBKIT::OsversionFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::LocationFilter>();
 
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::ExchangePreFilter>();
