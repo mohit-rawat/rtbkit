@@ -166,9 +166,7 @@ namespace RTBKIT  {
 		if(result->site){
 			string temp = result->site->page.host();
 			if(!(result->site->id)&&!result->site->page.empty()){
-				if(result->site->publisher){
-					result->site->id = Id("adatrix_"+result->site->publisher->id.toString()+temp);
-				}else result->site->id = Id(temp);
+				result->site->id = Id("adatrix_"+temp);
 			}
 			if(result->site->name.empty()&&result->site->domain.empty())result->site->name = temp;
 		}
