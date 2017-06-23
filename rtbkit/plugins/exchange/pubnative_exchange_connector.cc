@@ -372,7 +372,7 @@ namespace RTBKIT {
 		if(crinfo->adformat == "banner"){
 			b.adm = crinfo->adm;
 		}
-		b.psattr = crinfo->attr;
+		//		b.psattr = crinfo->attr;
 
 		Json::Value adm;
 		int j = 0;
