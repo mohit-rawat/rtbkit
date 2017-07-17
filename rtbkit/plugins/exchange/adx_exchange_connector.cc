@@ -175,6 +175,7 @@ namespace RTBKIT  {
 				result->app->id = Id(result->app->bundle.utf8String());
 			}
 		}
+		cout<<"Bidrequest after parsing in adx exchange connector : "<<result->toJson()<<endl;
 		return result;
 	}
 
@@ -271,6 +272,11 @@ namespace RTBKIT  {
 		getAttr(result, pconf, "attr", crinfo->attr, includeReasons);
 		getAttr(result, pconf, "crid", crinfo->crid, includeReasons);
 		getAttr(result, pconf, "impression_tracking_url", crinfo->impression_tracking_url, includeReasons);
+		crinfo->adformat = creative.adformat;
+		if (crinfo->adformat.empty())
+			result.setIncompatible
+				("creative[].adformat is null",
+				 includeReasons);
 		result.info = crinfo;
  
 		return result;
@@ -373,11 +379,16 @@ namespace RTBKIT  {
 		b.id = Id(auction.id, auction.request->imp[0].id);
 		b.impid = auction.request->imp[spotNum].id;
 		b.price.val = getAmountIn<CPM>(resp.price.maxPrice);
-		b.adm = crinfo->adm;
+		if(crinfo->adformat == "banner"){
+			b.adm = crinfo->adm;
+			b.w = creative.format.width;
+			b.h = creative.format.height;
+		}
+		else if(crinfo->adformat == "video"){
+			b.adm = creative.videoConfig["adm"].asString();   //have to send VAST xml for video ad
+		}
 		b.adomain = crinfo->adomain;
 		b.crid = crinfo->crid;
-		b.w = creative.format.width;
-		b.h = creative.format.height;
 		int j = 0;
 		for(auto i:crinfo->impression_tracking_url){
 		  //		  i.replace(i.find("${AUCTION_IMP_ID}"), 17, b.impid.toString());

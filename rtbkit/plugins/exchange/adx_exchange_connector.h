@@ -61,6 +61,7 @@ namespace RTBKIT {
 			std::string adm;        ///< Actual XHTML ad markup
 			std::vector<std::string> adomain; ///< Advertiser Domain
 //			std::vector<std::string> mimeTypes; ///< MIME Types for this creative
+			std::string adformat;    ///<required for sending appropriate responses for different adformats
 			std::set<int>  type;                            ///< Creative type Appendix 6.2
 			std::set<int>  attr;                            ///< Creative attributes Appendix 6.3
 			std::set<std::string>impression_tracking_url;       ///< impression tracking url

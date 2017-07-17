@@ -18,60 +18,47 @@
 
 namespace RTBKIT {
 
-
-/******************************************************************************/
-/* VIDEO DURATION FILTER                                                      */
-/******************************************************************************/
-/*
-struct DurationFilter : public IterativeCreativeFilter<DurationFilter>
-{
-	static constexpr const char* name = "DurationFilter";
-	unsigned priority() const { return 10; }
-	bool filterCreative(FilterState &state, const AdSpot &spot,
-                        const AgentConfig &config, const Creative &creative) const
-		{
-			if (creative.adformat=="video" && spot.video){
-				int duration = creative.videoConfig["duration"].asInt();
-				if(duration >= spot.video->minduration.val && duration <=spot.video->maxduration.val){
-						return true;
-					}else{return false;};
-			}else{return true;};
-		}
-};
-
-*/
-
 /******************************************************************************/
 /* VIDEO FILTER                                                               */
 /******************************************************************************/
 
-	struct VideoFilter : public IterativeCreativeFilter<VideoFilter>
-	{
-		static constexpr const char *name = "VideoFilter";
-		unsigned priority() const { return 10; }
-		bool filterCreative(FilterState &state, const AdSpot &spot,
-							const AgentConfig &config, const Creative &creative) const{
-			//      if (creative.adformat=="native"){
-			if(spot.video){
-				std::cerr<<"====1===="<<std::endl;
-				Datacratic::List<int> protocols;
-				for(auto i : spot.video->protocols){
-					protocols.push_back(i.val);
+struct VideoFilter : public IterativeCreativeFilter<VideoFilter>
+{
+	static constexpr const char *name = "VideoFilter";
+	unsigned priority() const { return 10; }
+	bool filterCreative(FilterState &state, const AdSpot &spot,
+						const AgentConfig &config, const Creative &creative) const{
+		if(spot.video){
+			Datacratic::List<int> protocols;
+			for(auto i : spot.video->protocols){
+				protocols.push_back(i.val);
+			}
+			std::vector<std::string> mimes;
+			for(auto i: spot.video->mimes ){
+				mimes.push_back(i.type);
+			}
+			if((isnan(spot.video->minduration.val) || spot.video->minduration.val <= creative.videoConfig["duration"].asInt()) && (isnan(spot.video->maxduration.val) || spot.video->maxduration.val >= creative.videoConfig["duration"].asInt())){
+				if(std::find(mimes.begin(), mimes.end(), creative.videoConfig["mime"].asString()) != mimes.end()){
+					if(std::find(protocols.begin(), protocols.end(), creative.videoConfig["protocol"].asInt()) != protocols.end()){
+						if(((spot.video->minbitrate.val==-1) || spot.video->minbitrate.val <= creative.videoConfig["bitrate"].asInt()) && ((spot.video->maxbitrate.val==-1) || spot.video->maxbitrate.val >= creative.videoConfig["bitrate"].asInt())){
+							if(spot.video->linearity.val==1||spot.video->linearity.val == -1){
+								return true;
+							}
+						}
+					}
 				}
-				std::vector<std::string> mimes;
-				for(auto i: spot.video->mimes ){
-					mimes.push_back(i.type);
-				}
-				if(
-					(spot.video->minduration.val <= creative.videoConfig["duration"].asInt()) && (spot.video->maxduration.val >= creative.videoConfig["duration"].asInt()) && (std::find(mimes.begin(), mimes.end(), creative.videoConfig["mimetype"].asString()) != mimes.end()) && (std::find(protocols.begin(), protocols.end(), creative.videoConfig["protocol"].asInt()) != protocols.end())){
-					return true;
-				}else{return false;}
-			}else{
-				return true;}
-			return true;
-		}
-	};
-
+			}return false;
+		}return true;
+	}
+};			
+/*
+  (spot.video->minduration.val <= creative.videoConfig["duration"].asInt()) && (spot.video->maxduration.val >= creative.videoConfig["duration"].asInt())
+  && (std::find(mimes.begin(), mimes.end(), creative.videoConfig["mime"].asString()) != mimes.end())
+  && (std::find(protocols.begin(), protocols.end(), creative.videoConfig["protocol"].asInt()) != protocols.end())
+  &&(spot.video->minbitrate.val <= creative.videoConfig["bitrate"].asInt()) && (spot.video->maxbitrate.val >= creative.videoConfig["bitrate"].asInt())
+  &&spot.video->linearity.val==1){ 
+*/
+			
 /******************************************************************************/
 /* ADFORMAT FILTER                                                            */
 /******************************************************************************/
