@@ -133,7 +133,7 @@ filter(const BidRequest& br, const ExchangeConnector* conn, const ConfigSet& mas
     uint64_t ticksStart = sampleStats ? ticks() : 0;
 
     for (FilterBase* filter : current->filters) {
-		cerr << "Filter name :: " <<  filter->name() << endl;
+      //      		cerr << "Filter name :: " <<  filter->name() << endl;
         filter->filter(state);
 
         const ConfigSet& filtered = state.configs();

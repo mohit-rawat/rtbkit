@@ -163,7 +163,7 @@ namespace RTBKIT  {
 		if(result->ext["udi"].isMember("imei")){
 			OpenRTBExchangeConnector::getIMEIcode(result);
 		};
-		if(result->site){
+				if(result->site){
 			string temp = result->site->page.host();
 			if(!(result->site->id)&&!result->site->page.empty()){
 				result->site->id = Id("adatrix_"+temp);
@@ -290,7 +290,7 @@ namespace RTBKIT  {
 		const auto crinfo = reinterpret_cast<const CreativeInfo*>(info);
 //bcat
 		const auto& blocked_categories = request.restrictions.get("bcat");
-		std::cerr<<"request.bcat : "<<request.restrictions.get("bcat")<<std::endl;
+		//		std::cerr<<"request.bcat : "<<request.restrictions.get("bcat")<<std::endl;
 		for (const auto& cat: crinfo->cat)
 			if (blocked_categories.contains(cat)) {
 				this->recordHit ("blockedCategory");

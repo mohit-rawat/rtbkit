@@ -152,8 +152,9 @@ parseBidRequest(HttpAuctionHandler & connection,
 	
 //replacing carriername from aerospike
 	if(result->device != NULL){
-		std::string exNet = result->exchange + " " + result->device->carrier.utf8String();
-		result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
+	  std::string exNet = result->exchange + " " + result->ext["carriername"].asString();
+	  //	  std::cout<<"network : "<<exNet<<std::endl;
+	  result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
 	}
 	
 	OpenRTBExchangeConnector::getAudienceId(result);
@@ -274,7 +275,7 @@ ExchangeConnector::ExchangeCompatibility
       const auto crinfo = reinterpret_cast<const CreativeInfo*>(info);
 //bcat
 	  const auto& blocked_categories = request.restrictions.get("bcat");
-	  std::cerr<<"request.bcat : "<<request.restrictions.get("bcat")<<std::endl;
+	  //	  std::cerr<<"request.bcat : "<<request.restrictions.get("bcat")<<std::endl;
 	  for (const auto& cat: crinfo->cat)
 		  if (blocked_categories.contains(cat)) {
 			  this->recordHit ("blockedCategory");

@@ -131,8 +131,8 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     unsigned priority() const { return 0xF306; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
-      std::cerr<<"CreativeMatrix : "<<state.creatives(0).print()<<std::endl;
-      std::cerr<<"impression(apspot).ext : "<<spot.ext<<std::endl;
+      //      std::cerr<<"CreativeMatrix : "<<state.creatives(0).print()<<std::endl;
+      //      std::cerr<<"impression(apspot).ext : "<<spot.ext<<std::endl;
       if(spot.native){
 	std::cerr<<"====1===="<<std::endl;
 	auto imageassets = creative.nativeConfig["assets"]["images"];
