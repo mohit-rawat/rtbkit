@@ -58,7 +58,25 @@ struct VideoFilter : public IterativeCreativeFilter<VideoFilter>
   &&(spot.video->minbitrate.val <= creative.videoConfig["bitrate"].asInt()) && (spot.video->maxbitrate.val >= creative.videoConfig["bitrate"].asInt())
   &&spot.video->linearity.val==1){ 
 */
-			
+
+/******************************************************************************/
+/*INTERSTITIAL  FILTER                                                        */
+/******************************************************************************/
+	struct InterstitialFilter : public IterativeCreativeFilter<InterstitialFilter>
+	{
+		static constexpr const char *name = "InterstitialFilter";
+		unsigned priority() const { return 10; }
+		bool filterCreative(FilterState &state, const AdSpot &spot,
+							const AgentConfig &config, const Creative &creative) const{
+			if(spot.instl.val==true){
+				if(spot.video){
+					if((spot.video->w.val >= creative.videoConfig["w"].asInt()) && (spot.video->w.val*.5<=creative.videoConfig["w"].asInt()) && (spot.video->h.val >= creative.videoConfig["h"].asInt()) && (spot.video->h.val*.4<=creative.videoConfig["h"].asInt()))						return true;
+					else return false;
+				}else return true;
+			}else return true;
+		}
+	};
+
 /******************************************************************************/
 /* ADFORMAT FILTER                                                            */
 /******************************************************************************/
