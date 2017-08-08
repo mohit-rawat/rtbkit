@@ -385,7 +385,11 @@ namespace RTBKIT  {
 			b.h = creative.format.height;
 		}
 		else if(crinfo->adformat == "video"){
-			b.adm = creative.videoConfig["adm"].asString();   //have to send VAST xml for video ad
+		  string vastxml = creative.videoConfig["adm"].asString();
+		  //		  vastxml.replace(vastxml.find("${AUCTION_ID}"), 13, b.id.toString().substr(0, b.id.toString().length()-2));
+			b.adm = vastxml;   //have to send VAST xml for video ad
+			b.h = creative.videoConfig["h"].asInt();
+			b.w = creative.videoConfig["w"].asInt();
 		}
 		b.adomain = crinfo->adomain;
 		b.crid = crinfo->crid;
