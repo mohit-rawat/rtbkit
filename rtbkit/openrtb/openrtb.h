@@ -1273,6 +1273,8 @@ struct Bid {
 	std::string bundle;           ///< Bundle or package name of the app being advertised 
     std::set<std::string> cat;   ///<IAB content categories of the creative.
     std::set<int>  psattr;        ///< to publish Creative attributes 
+    Datacratic::UnicodeString burl;         ///< Billing notice URL called by the exchange when a winning bid becomes billable.
+                                            ///< required for adx video  
 };
 
 

@@ -203,7 +203,7 @@ namespace RTBKIT {
 					const HttpHeader & header,
 					const std::string & payload) {
 
-//  std::cerr<<"bidstring : "<<abc<<std::endl;
+	  //  std::cerr<<"bidstring : "<<payload<<std::endl;
 		std::shared_ptr<BidRequest> res;
 
 		std::shared_ptr<BidRequest> none; 
@@ -269,6 +269,7 @@ namespace RTBKIT {
 				for(auto j = res->imp[i].native->request.assets.begin(); j!=res->imp[i].native->request.assets.end(); j++){
 					res->imp[i].native->request.native.assets.push_back(*j);
 				}
+								std::cout<<"request after parsing in pubnative excon "<<res->toJson()<<std::endl;
 			}
 		}
 		
@@ -366,11 +367,11 @@ namespace RTBKIT {
 		b.price.val = getAmountIn<CPM>(resp.price.maxPrice);
 		b.adomain = crinfo->adomain;
 		b.crid = crinfo->crid;
-		b.iurl = cpinfo->iurl;
 		b.nurl = crinfo->nurl;
 		b.cat = crinfo->cat;
 		if(crinfo->adformat == "banner"){
 			b.adm = crinfo->adm;
+			b.iurl = cpinfo->iurl;
 		}
 		//		b.psattr = crinfo->attr;
 
@@ -385,19 +386,23 @@ namespace RTBKIT {
 		if(crinfo->adformat == "native"){
 			auto ninfo = creative.nativeConfig;
 			Json::Value AssetList = resp.bidData[spotNum].ext["assetList"];
-			
+			std::cout<<"AssetList "<<AssetList<<std::endl;			
+			std::cout<<"ninfo "<<ninfo<<std::endl;
 			adm["native"]["link"]["url"] = ninfo["link"]["url"];
-			
+			std::cout<<"pubnative check 1"<<std::endl;			
 			Json::Value admAsset(Json::arrayValue);
 			
 //populating title asset
 			if(AssetList.isMember("title")){
 				for(auto i : AssetList["title"].getMemberNames()){
+				  std::cout<<" assetlist title members "<<i<<std::endl;
 					Json::Value temptitleAsset;
 					temptitleAsset["id"] = std::stoi(i);
 					for(Json::Value j : ninfo["assets"]["titles"]){
 						if( j["id"].asInt() == AssetList["title"][i].asInt()){
-							temptitleAsset["title"]["text"] = j["text"];
+						  std::cout<<"ninfo title id "<<j["id"].asInt()<<std::endl;
+						  std::cout<<"Assetlist title id "<<AssetList["title"][i].asInt()<<std::endl;
+							temptitleAsset["title"]["text"] = j["title"];
 							break;
 						}
 					};
@@ -408,11 +413,13 @@ namespace RTBKIT {
 //populating image assets		
 			if(AssetList.isMember("images")){
 				for(auto i : AssetList["images"].getMemberNames()){
+			std::cout<<"pubnative check 2"<<std::endl;			
 					Json::Value tempimgAsset;
 					tempimgAsset["id"] = std::stoi(i);
 					for(Json::Value j : ninfo["assets"]["images"]){
 						if( j["id"].asInt() == AssetList["images"][i].asInt()){
 							tempimgAsset["img"]["url"] = j["url"];
+							std::cout<<"pubnative check 3"<<std::endl;
 							break;
 						}
 					};
@@ -423,19 +430,23 @@ namespace RTBKIT {
 //populating data assets
 			if(AssetList.isMember("data")){
 				for(auto i : AssetList["data"].getMemberNames()){
+				  std::cout<<"pubnative check 4"<<std::endl;
 					Json::Value tempdataAsset;
 					tempdataAsset["id"] = std::stoi(i);
 					for(Json::Value j : ninfo["assets"]["data"]){
 						if( j["id"].asInt() == AssetList["data"][i].asInt()){
 							tempdataAsset["data"]["value"] = j["value"];
+							std::cout<<"pubnative check 5"<<std::endl;
 							break;
 						}
 					};
 					admAsset.append(tempdataAsset);
 				}
 			}
+			adm["native"]["imptrackers"] = ninfo["imptrackers"];
 			adm["native"]["version"] = "1.1";
 			adm["native"]["assets"] = admAsset;
+			std::cout<<"pubnative check 6"<<std::endl;
 //		std::string abc = adm.toStringNoNewLine();
 //		std::cout<<escape_json(abc)<<std::endl;
 			char *cstr = &adm.toStringNoNewLine()[0u];

@@ -53,6 +53,7 @@ parseBidRequest(HttpAuctionHandler & connection,
                 const HttpHeader & header,
                 const std::string & payload)
 {
+  std::cout<<"smaato check 1"<<std::endl;
     std::shared_ptr<BidRequest> none;
 
     size_t found = header.queryParams.uriEscaped().find(SmaatoExchangeConnector::nobid);
@@ -60,7 +61,7 @@ parseBidRequest(HttpAuctionHandler & connection,
       connection.dropAuction("nobid");
       return none;
     }   
-
+  std::cout<<"smaato check 2"<<std::endl;
     // Check for JSON content-type
     if (!header.contentType.empty()) {
         static const std::string delimiter = ";";
@@ -79,11 +80,13 @@ parseBidRequest(HttpAuctionHandler & connection,
 
         if(content != "application/json") {
             connection.sendErrorResponse("UNSUPPORTED_CONTENT_TYPE", "The request is required to use the 'Content-Type: application/json' header");
+	    std::cout<<"smaato check 3"<<std::endl;
             return none;
         }
     }
     else {
         connection.sendErrorResponse("MISSING_CONTENT_TYPE_HEADER", "The request is missing the 'Content-Type' header");
+	std::cout<<"smaato check 4"<<std::endl;
         return none;
     }
 
@@ -96,20 +99,23 @@ parseBidRequest(HttpAuctionHandler & connection,
 
     // Check that it's version 2.0
     std::string openRtbVersion = it->second;
-    if (openRtbVersion != "2.0") {
+    if (openRtbVersion != "2.0 final") {
         connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.0 of the OpenRTB protocol but requested " + openRtbVersion);
+	std::cout<<"smaato check 5"<<std::endl;
         return none;
     }
-
+    openRtbVersion = "2.0";
     if(payload.empty()) {
         this->recordHit("error.emptyBidRequest");
         connection.sendErrorResponse("EMPTY_BID_REQUEST", "The request is empty");
+	std::cout<<"smaato check "<<std::endl;
         return none;
     }
 
     // Parse the bid request
     std::shared_ptr<BidRequest> result;
     try {
+      std::cout<<"smaato check 6"<<std::endl;
         ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
         result.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory(openRtbVersion)->parseBidRequest(context,
                                                                                               exchangeName(),
@@ -122,7 +128,7 @@ parseBidRequest(HttpAuctionHandler & connection,
     catch(...) {
         throw;
     }
-
+    std::cout<<"smaato check 7"<<std::endl;
     // per slot: blocked type and attribute;
     std::vector<int> intv;
     for (auto& spot: result->imp) {
@@ -164,6 +170,7 @@ parseBidRequest(HttpAuctionHandler & connection,
 	if(result->ext["udi"].isMember("imei")){
 		OpenRTBExchangeConnector::getIMEIcode(result);
 	};
+  std::cout<<"smaato check 8"<<std::endl;
 
     return result;
 }

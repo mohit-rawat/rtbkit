@@ -175,7 +175,7 @@ namespace RTBKIT  {
 				result->app->id = Id(result->app->bundle.utf8String());
 			}
 		}
-		cout<<"Bidrequest after parsing in adx exchange connector : "<<result->toJson()<<endl;
+		//		cout<<"Bidrequest after parsing in adx exchange connector : "<<result->toJson()<<endl;
 		return result;
 	}
 
@@ -383,6 +383,12 @@ namespace RTBKIT  {
 			b.adm = crinfo->adm;
 			b.w = creative.format.width;
 			b.h = creative.format.height;
+			int j = 0;
+			for(auto i:crinfo->impression_tracking_url){
+			  i.replace(i.find("${AUCTION_ID}"), 13, b.id.toString().substr(0, b.id.toString().length()-2));
+			  b.ext["impression_tracking_url"][j] = i;
+			  j++;
+			};
 		}
 		else if(crinfo->adformat == "video"){
 		  string vastxml = creative.videoConfig["adm"].asString();
@@ -390,16 +396,15 @@ namespace RTBKIT  {
 			b.adm = vastxml;   //have to send VAST xml for video ad
 			b.h = creative.videoConfig["h"].asInt();
 			b.w = creative.videoConfig["w"].asInt();
+			std::string i = *(crinfo->impression_tracking_url.begin());
+			std::cout<<"crinfo burl "<<i<<std::endl;
+			i.replace(i.find("${AUCTION_ID}"), 13, b.id.toString().substr(0, b.id.toString().length()-2));
+			b.burl = i;
+			std::cout<<"b.burl "<<b.burl<<std::endl;
 		}
 		b.adomain = crinfo->adomain;
 		b.crid = crinfo->crid;
-		int j = 0;
-		for(auto i:crinfo->impression_tracking_url){
-		  //		  i.replace(i.find("${AUCTION_IMP_ID}"), 17, b.impid.toString());
-		  i.replace(i.find("${AUCTION_ID}"), 13, b.id.toString().substr(0, b.id.toString().length()-2));
-		  b.ext["impression_tracking_url"][j] = i;
-		  j++;
-		};
+
 		response.cur = "USD";
 	}
 

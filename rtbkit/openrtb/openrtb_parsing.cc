@@ -421,6 +421,7 @@ DefaultDescription()
     addField("cat", &Bid::cat, "IAB content categories of the creative");
     addField("attr", &Bid::psattr, "just to publish attr");
     addField("ext", &Bid::ext, "Extensions");
+    addField("burl", &Bid::burl, "Billing notice url");
 }
 
 DefaultDescription<OpenRTB::SeatBid>::
