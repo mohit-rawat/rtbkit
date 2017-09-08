@@ -591,7 +591,25 @@ struct AuctionType: public Datacratic::TaggedEnum<AuctionType, 2> {
     }
 };
 
+/*****************************************************************************/
+/* FORMAT                                                                    */
+/*****************************************************************************/
 
+/** Format Object
+	This object represents an allowed size (i.e., height and width combination)
+	for a banner impression. These are typically used in an array for an
+	impression where multiple sizes are permitted.
+*/
+	struct Format{
+		~Format();
+		Datacratic::TaggedInt w;     ///<Width in device independent pixels (DIPS)
+		Datacratic::TaggedInt h;     ///<Width in device independent pixels (DIPS)
+		Datacratic::TaggedInt wratio;    ///<Relative width when expressing size as a ratio
+		Datacratic::TaggedInt hratio;    ///<Relative height when expressing size as a ratio
+		Datacratic::TaggedInt wmin;    ///<The minimum width in DIPS at which the ad will be displayed the size is expressed as a ratio
+		Json::Value ext;    ///<Placeholder for exchange-specific extensions to OpenRTB
+	};	
+	
 /*****************************************************************************/
 /* BANNER                                                                    */
 /*****************************************************************************/
@@ -625,6 +643,9 @@ struct Banner {
     FramePosition topframe;          ///< Is it in the top frame (1) or an iframe (0)?
     Datacratic::List<ExpandableDirection> expdir;///< Expandable ad directions (table 6.11)
     Datacratic::List<ApiFramework> api;          ///< Supported APIs (table 6.4)
+	std::vector<Format> format;      ///<Array of format objects for banner sizes permitted
+	Datacratic::TaggedInt vcm;       ///<Indicates the companion ad rendering mode
+                                     ///<0 = concurrent, 1 = end-card
     Json::Value ext;                 ///< Extensions go here, new in OpenRTB 2.1
 };
 
@@ -668,7 +689,13 @@ struct Video {
     std::vector<Banner> companionad; ///< List of companion banners available
     Datacratic::List<ApiFramework> api;     ///< List of supported API frameworks (table 6.4)
     Datacratic::List<VastCompanionType> companiontype;    ///< VAST Companion Types (table 6.17)
+    Datacratic::TaggedInt skip;    ///< If the player will allow the video to be skipped, where 0 = no, 1 = yes
+	Datacratic::TaggedInt skipmin;    ///< Videos of duration greater than this can be skippable; only applicable if the ad is skippable
+	Datacratic::TaggedInt skipafter;          ///<Number of seconds a video must play before skipping is enabled; only applicable if the ad is skippable
+	Datacratic::TaggedInt placement;       ///<Placement type for the impression  
+	Datacratic::TaggedInt playbackend;     ///<Event that causes playback to end.
     Json::Value ext;            ///< Extensions go here, new in OpenRTB 2.1
+	
 };
 
   struct NativeTitle{
@@ -824,6 +851,23 @@ struct PMP { // New in OpenRTB 2.2
 };
 
 /*****************************************************************************/
+/* METRIC                                                                    */
+/*****************************************************************************/
+
+/** Metric Object
+	This object is associated with an impression as an array of metrics. These
+	metrics can offer insight into the impression to assist with decisioning
+	such as average recent viewability, click-through rate, etc
+*/
+struct Metric {
+	~Metric();
+	Datacratic::UnicodeString type;    ///<Type of metric being presented
+	Datacratic::TaggedFloat value;    ///<Number representing the value of the metric
+	Datacratic::UnicodeString vendor;    ///<Source of the value
+	Json::Value ext;    ///<Exchange-spedcific extensions
+};
+	
+/*****************************************************************************/
 /* IMPRESSION                                                                */
 /*****************************************************************************/
 
@@ -852,10 +896,68 @@ struct Impression {
     Datacratic::TaggedInt secure;           ///< Flag that requires secure https assets (1 == yes) (OpenRTB 2.2)
     Datacratic::List<std::string> iframebuster;         ///< Supported iframe busters (for expandable/video ads)
     Datacratic::Optional<OpenRTB::PMP> pmp;        ///< Containing any Deals eligible for the impression object
+	Datacratic::TaggedInt clickbrowser;           ///< Indicates the type of browser opened upon clicking the creative
+	                                        ///<in an app, where 0 = embedded, 1 = native
+	Datacratic::TaggedInt exp;           ///<Advisory as to the number of seconds that may elapse between the auction and the actual impression
+	std::vector<Metric> metric;         ///< An array of Metric object
     Json::Value ext;                   ///< Extended impression attributes
 };
 
+/*****************************************************************************/
+/* SEGMENT                                                                   */
+/*****************************************************************************/
 
+/** 3.3.14 Segment Object
+
+    The data and segment objects together allow data about the user to be
+    passed to bidders in the bid request.  Segment objects convey specific
+    units of information from the provider identified in the parent data
+    object.
+
+    The segment object itself and all of its parameters are optional, so
+    default values are not provided; if an optional parameter is not
+    specified, it should be considered unknown.
+*/
+	struct Segment {
+		Datacratic::Id id;                         ///< Segment ID
+		Datacratic::UnicodeString name;                   ///< Segment name
+		Datacratic::UnicodeString value;                  ///< Segment value
+		Json::Value ext;               ///< Extensions go here, new in OpenRTB 2.1
+
+		/// Datacratic Extensions
+		Datacratic::TaggedDouble segmentusecost;    ///< Cost of using segment in CPM
+	};
+
+
+/*****************************************************************************/
+/* DATA                                                                      */
+/*****************************************************************************/
+
+/** 3.3.13 Data Object
+
+    The data and segment objects together allow data about the user to be
+    passed to bidders in the bid request.  This data may be from multiple
+    sources (e.g., the exchange itself, third party providers) as specified
+    by the data object ID field.  A bid request can mix data objects from 
+    multiple providers.
+
+    The data object itself and all of its parameters are optional, so
+    default values are not provided.  If an optional parameter is not
+    specified, it should be considered unknown.
+*/
+	struct Data {
+		Datacratic::Id id;                           ///< Exchange specific data prov ID
+		Datacratic::UnicodeString name;                  ///< Data provider name
+		std::vector<Segment> segment;         ///< Segment of data
+		Json::Value ext;                 ///< Extensions go here, new in OpenRTB 2.1
+
+		/// Datacratic Extensions
+		std::string usecostcurrency;          ///< Currency of use cost
+		Datacratic::TaggedDouble datausecost;         ///< Cost of using the data (CPM)
+	};
+
+
+	
 /*****************************************************************************/
 /* CONTENT                                                                   */
 /*****************************************************************************/
@@ -897,6 +999,12 @@ struct Content {
     MediaRating qagmediarating;///< Media rating per QAG guidelines (table 6.18).
     Embeddable embeddable;   ///< 1 if embeddable, 0 otherwise
     std::string language;     ///< Content language.  ISO 639-1 (alpha-2).
+	Datacratic::UnicodeString artist;        ///<Artist credited with the content
+	Datacratic::UnicodeString genre;        ///<Genre that best describes the content
+	Datacratic::UnicodeString album;        ///< Album to which the content belongs; typically for audio(to be added)
+	Datacratic::TaggedInt prodq;  ///<Production quality. Refer to List 5.11(in openrtb 2.4)
+	Datacratic::UnicodeString isrc;    ///<International Standard Recording Code conforming to ISO-3901
+	std::vector<Data> data;    ///<Additional content data 
     Json::Value ext;         ///< Extensions go here, new in OpenRTB 2.1
 };
 
@@ -1012,6 +1120,9 @@ struct Geo {
     /// Rubicon extensions
     Datacratic::TaggedBool latlonconsent;  ///< Has user given consent for lat/lon use?
     Datacratic::TaggedInt utcoffset;         ///< Local time as the number +/- of minutes from UTC
+	Datacratic::TaggedInt lastfix;      ///<Number of seconds since this geolocation fix was established
+	Datacratic::TaggedInt accuracy;     ///<Estimated location accuracy in meters
+	Datacratic::TaggedInt ipservice;    ///<Service or provider used to determine geolocation from IP address if applicable
 };
 
 
@@ -1068,61 +1179,9 @@ struct Device {
     std::string hwv;        ///< Hardware version of the device (e.g., “5S” for iPhone 5S).
     Datacratic::TaggedFloat pxratio;      ///< The ratio of physical pixels to device independent pixels
     Datacratic::TaggedInt ppi;                ///< Screen size as pixels per linear inch
+	Datacratic::TaggedInt geofetch;      ///<Indicates if the geolocation API will be available to JavaScript code running in the banner, where 0 = no, 1 = yes
+	Datacratic::UnicodeString mccmnc;     ///<Mobile carrier as the concatenated MCC-MNC code
     Json::Value ext;       ///< Extensions go here
-};
-
-
-/*****************************************************************************/
-/* SEGMENT                                                                   */
-/*****************************************************************************/
-
-/** 3.3.14 Segment Object
-
-    The data and segment objects together allow data about the user to be
-    passed to bidders in the bid request.  Segment objects convey specific
-    units of information from the provider identified in the parent data
-    object.
-
-    The segment object itself and all of its parameters are optional, so
-    default values are not provided; if an optional parameter is not
-    specified, it should be considered unknown.
-*/
-struct Segment {
-    Datacratic::Id id;                         ///< Segment ID
-    Datacratic::UnicodeString name;                   ///< Segment name
-    Datacratic::UnicodeString value;                  ///< Segment value
-    Json::Value ext;               ///< Extensions go here, new in OpenRTB 2.1
-
-    /// Datacratic Extensions
-    Datacratic::TaggedDouble segmentusecost;    ///< Cost of using segment in CPM
-};
-
-
-/*****************************************************************************/
-/* DATA                                                                      */
-/*****************************************************************************/
-
-/** 3.3.13 Data Object
-
-    The data and segment objects together allow data about the user to be
-    passed to bidders in the bid request.  This data may be from multiple
-    sources (e.g., the exchange itself, third party providers) as specified
-    by the data object ID field.  A bid request can mix data objects from 
-    multiple providers.
-
-    The data object itself and all of its parameters are optional, so
-    default values are not provided.  If an optional parameter is not
-    specified, it should be considered unknown.
-*/
-struct Data {
-    Datacratic::Id id;                           ///< Exchange specific data prov ID
-    Datacratic::UnicodeString name;                  ///< Data provider name
-    std::vector<Segment> segment;         ///< Segment of data
-    Json::Value ext;                 ///< Extensions go here, new in OpenRTB 2.1
-
-    /// Datacratic Extensions
-    std::string usecostcurrency;          ///< Currency of use cost
-    Datacratic::TaggedDouble datausecost;         ///< Cost of using the data (CPM)
 };
 
 
@@ -1185,6 +1244,26 @@ struct Regulations { // New in OpenRTB 2.2
 };
 
 /*****************************************************************************/
+/*SOURCE                                                                     */
+/*****************************************************************************/
+
+
+/** Source Object
+	This object describes the nature and behavior of the entity that is the
+	source of the bid request upstream from the exchange. The primary purpose
+	of this object is to define post-auction or upstream decisioning when the
+	exchange itself does not control the final decision	
+ */
+
+	struct Source {
+		~Source();
+		Datacratic::TaggedInt fd;    ///<Entity responsible for the final impression sale decision, where 0 = exchange, 1 = upstream source
+		Datacratic::UnicodeString tid;      ///<Transaction ID that must be common across all participants in this bid request
+		Datacratic::UnicodeString pchain;     ///<Payment ID chain
+		Json::Value ext;
+	};
+	
+/*****************************************************************************/
 /* BID REQUEST                                                               */
 /*****************************************************************************/
 
@@ -1218,11 +1297,14 @@ struct BidRequest {
     std::vector<std::string> cur;                ///< Allowable currencies
     Datacratic::List<ContentCategory> bcat;        ///< Blocked advertiser categories (table 6.1)
     std::vector<Datacratic::UnicodeString> badv;           ///< Blocked advertiser domains
-    std::vector<Datacratic::UnicodeString> bapp;           ///< Block list of applications by their platform-specific exchangeindependent application identifiers
+    std::vector<Datacratic::UnicodeString> bapp;           ///< Blocked list of applications by their platform-specific exchangeindependent application identifiers
     Datacratic::Optional<Regulations> regs; ///< Regulations Object list (OpenRTB 2.2)
     Json::Value ext;                   ///< Protocol extensions
     Json::Value unparseable;           ///< Unparseable fields get put here
     Datacratic::TaggedBool test;       ///< Indicator of test mode in which auctions are not billable, where 0 = live mode, 1 = test mode
+	std::vector<std::string> bseat;    ///< Block list of buyer seats
+	std::vector<std::string> wlang;    ///< White list of languages for creatives using ISO-639-1-alpha-2
+	Datacratic::Optional<Source> source;     ///< A Source object that provides data about the inventory source
 };
 
 
@@ -1274,7 +1356,14 @@ struct Bid {
     std::set<std::string> cat;   ///<IAB content categories of the creative.
     std::set<int>  psattr;        ///< to publish Creative attributes 
     Datacratic::UnicodeString burl;         ///< Billing notice URL called by the exchange when a winning bid becomes billable.
-                                            ///< required for adx video  
+                                            ///< required for adx video
+	Datacratic::TaggedInt qagmediarating;    ///<Creative media rating per IQG guidelines
+	Datacratic::TaggedInt protocol;       ///< Video response protocol of the markup if applicable
+	Datacratic::UnicodeString lurl;       ///<Loss notice URL called by the exchange when a bid is known to have been lost
+	Datacratic::UnicodeString tactic;     ///<Tactic ID to enable buyers to label bids for reporting to the exchange the tactic through which their bid was submitted
+	Datacratic::UnicodeString language;    ///<Language of the creative using ISO-639-1-alpha-2
+	Datacratic::TaggedInt wratio;      ///<Relative width of the creative when expressing size as a ratio
+	Datacratic::TaggedInt hratio;     ///<Relative height of the creative when expressing size as a ratio
 };
 
 

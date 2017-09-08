@@ -55,8 +55,20 @@ DefaultDescription()
     addField("ext", &BidRequest::ext, "Extended fields outside of protocol");
     addField("unparseable", &BidRequest::unparseable, "Unparseable fields are collected here");
     addField("test", &BidRequest::test, "Indicator of test mode in which auctions are not billable");
+	addField("bseat", &BidRequest::bseat, "Block list of buyer seats");
+	addField("wlang", &BidRequest::wlang, "White list of languages for creatives using ISO-639-1-alpha-2");
+	addField("source", &BidRequest::source, "data about the inventory source");
 }
 
+DefaultDescription<Source>::
+DefaultDescription()
+{
+	addField("fd", &Source::fd, "Entity reponsible for final impreesion");
+	addField("tid", &Source::tid, "Transaction ID");
+	addField("pchain", &Source::pchain, "Payment ID chain");
+	addField("ext", &Source::ext, "Exchange-specific fields");
+}
+	
 DefaultDescription<Impression>::
 DefaultDescription()
 {
@@ -75,7 +87,19 @@ DefaultDescription()
     addField("secure", &Impression::secure, "Does the impression require https");
     addField("iframebuster", &Impression::iframebuster, "Supported iframe busters");
     addField("pmp", &Impression::pmp, "Contains any deals eligible for the impression");
+	addField("clickbrowser", &Impression::clickbrowser, "Type of browser opened on click");
+	addField("exp", &Impression::exp, "Time between auction and auction impression");
+	addField("metric", &Impression::metric, "Array of Metric object");
     addField("ext", &Impression::ext, "Extended impression attributes");
+}
+
+DefaultDescription<OpenRTB::Metric>::
+DefaultDescription()
+{
+	addField("type", &Metric::type, "Type of metric being presented");
+	addField("value", &Metric::value, "Number representing the value of metric");
+	addField("vendor", &Metric::vendor, "Source of the value");
+	addField("ext", &Metric::ext, "Exchange-specific extensions");
 }
 
 DefaultDescription<OpenRTB::Content>::
@@ -102,9 +126,15 @@ DefaultDescription()
     addField("qagmediarating", &Content::qagmediarating, "Media rating per QAG guidelines");
     addField("embeddable", &Content::embeddable, "1 if embeddable, 0 otherwise");
     addField("language", &Content::language, "ISO 639-1 Content language");
+    addField("artist", &Content::artist, "artist of the content");
+    addField("genre", &Content::genre, "genre of the content");
+	addField("album", &Content::album, "album of the content");
+	addField("prodq", &Content::prodq, "production quality");
+	addField("isrc", &Content::isrc, "International Standard Recording Code");
+	addField("data", &Content::data, "Additional content data");
     addField("ext", &Content::ext, "Extensions to the protocol go here");
 }
-
+	
 DefaultDescription<OpenRTB::Banner>::
 DefaultDescription()
 {
@@ -124,9 +154,22 @@ DefaultDescription()
     addField("topframe", &Banner::topframe, "Is it in the top frame or an iframe?");
     addField("expdir", &Banner::expdir, "Expandable ad directions");
     addField("api", &Banner::api, "Supported APIs");
+    addField("format", &Banner::format, "Array of format objects");
+	addField("vcm", &Banner::vcm, "Companion ad rendering mode");
     addField("ext", &Banner::ext, "Extensions to the protocol go here");
-}
+}	
 
+DefaultDescription<OpenRTB::Format>::
+DefaultDescription()
+{
+	addField("w", &Format::w, "Width in DIPS");
+	addField("h", &Format::h, "Height in DIPS");
+	addField("wratio", &Format::wratio, "Relative width when size is as ratio");
+	addField("hratio", &Format::hratio, "Relative height when size is as ratio");
+	addField("wmin", &Format::wmin, "The minimum width in DIPS");
+	addField("ext", &Format::ext, "Extensions to Format");
+}
+	
 DefaultDescription<OpenRTB::Video>::
 DefaultDescription()
 {
@@ -151,6 +194,11 @@ DefaultDescription()
     addField("companionad", &Video::companionad, "List of companion banners available");
     addField("api", &Video::api, "List of supported API frameworks");
     addField("companiontype", &Video::companiontype, "List of VAST companion types");
+	addField("skip", &Video::skip, "Video can be skipped or not");
+	addField("skipmin", &Video::skipmin, "Minimum duration required for the video to be skipped");
+	addField("skipafter", &Video::skipafter, "Seconds a video must play before skipping enabled");
+	addField("placement", &Video::placement, "Placement type for the impression");
+	addField("playbackend", &Video::playbackend, "Event that causes playback to end");
     addField("ext", &Video::ext, "Extensions to the protocol go here");
 }
 
@@ -317,6 +365,9 @@ DefaultDescription()
     addField("dma", &Geo::dma, "DMA code");
     /// Rubicon extension
     addField("latlonconsent", &Geo::latlonconsent, "User has given consent for lat/lon information to be used");
+	addField("lastfix", &Geo::lastfix, "Seconds since this geolocation fix was established");
+	addField("accuracy", &Geo::accuracy, "Location accuracy in meters");
+	addField("ipservice", &Geo::ipservice, "Service used to provide geolocation frim IP");
 }
 
 DefaultDescription<OpenRTB::Device>::
@@ -348,9 +399,11 @@ DefaultDescription()
     addField("w", &Device::w, "width of screen in pixels");
     addField("lmt", &Device::lmt, "limit ad tracking");
     addField("hwv", &Device::hwv, "hardware version");
-    addField("ext", &Device::ext, "Extensions to device field go here");
     addField("pxratio", &Device::pxratio, "The ratio of physical pixels to device independent pixels");
+	addField("geofetch", &Device::geofetch, "Is geolocation API available or not");
     addField("ppi", &Device::ppi, "Screen size as pixels per linear inch");
+	addField("mccmnc", &Device::mccmnc, "Mobile carrier as the MCC-MNC code");
+    addField("ext", &Device::ext, "Extensions to device field go here");
 }
 
 DefaultDescription<OpenRTB::Segment>::
@@ -422,6 +475,13 @@ DefaultDescription()
     addField("attr", &Bid::psattr, "just to publish attr");
     addField("ext", &Bid::ext, "Extensions");
     addField("burl", &Bid::burl, "Billing notice url");
+	addField("qagmediarating", &Bid::qagmediarating, "Creative media rating per IQG guidelines");
+	addField("protocol", &Bid::protocol, "Video response protocol of the markup");
+	addField("lurl", &Bid::lurl, "Loss notice URL");
+	addField("tactic", &Bid::tactic, "Tactic ID");
+	addField("language", &Bid::language, "Language of the creative");
+	addField("wratio", &Bid::wratio, "Relative width of the creative");
+	addField("hratio", &Bid::hratio, "Relative height of the creative");
 }
 
 DefaultDescription<OpenRTB::SeatBid>::

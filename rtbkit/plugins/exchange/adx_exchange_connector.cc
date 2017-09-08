@@ -96,8 +96,8 @@ namespace RTBKIT  {
 
 		// Check that it's version 2.3
 		std::string openRtbVersion = it->second;
-		if (openRtbVersion != "2.3") {
-			connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.3 of the OpenRTB protocol but requested " + openRtbVersion);
+		if (openRtbVersion != "2.5") {
+			connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.5 of the OpenRTB protocol but requested " + openRtbVersion);
 			return none;
 		}
 
@@ -175,7 +175,7 @@ namespace RTBKIT  {
 				result->app->id = Id(result->app->bundle.utf8String());
 			}
 		}
-		//		cout<<"Bidrequest after parsing in adx exchange connector : "<<result->toJson()<<endl;
+//		cout<<"Bidrequest after parsing in adx exchange connector : "<<result->toJson()<<endl;
 		return result;
 	}
 

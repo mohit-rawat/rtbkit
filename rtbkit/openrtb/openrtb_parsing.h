@@ -260,17 +260,35 @@ struct DefaultDescription<OpenRTB::BidRequest>
 };
 
 template<>
+struct DefaultDescription<OpenRTB::Source>
+	: public StructureDescription<OpenRTB::Source> {
+	DefaultDescription();
+};
+	
+template<>
 struct DefaultDescription<OpenRTB::Impression>
     : public StructureDescription<OpenRTB::Impression> {
     DefaultDescription();
 };
 
 template<>
+struct DefaultDescription<OpenRTB::Metric>
+	: public StructureDescription<OpenRTB::Metric> {
+	DefaultDescription();
+};
+	
+template<>
 struct DefaultDescription<OpenRTB::Banner>
     : public StructureDescription<OpenRTB::Banner> {
     DefaultDescription();
 };
 
+template<>
+struct DefaultDescription<OpenRTB::Format>
+	: public StructureDescription<OpenRTB::Format> {
+	DefaultDescription();
+};
+	
 template<>
 struct DefaultDescription<OpenRTB::Video>
     : public StructureDescription<OpenRTB::Video> {
@@ -333,6 +351,18 @@ struct DefaultDescription<OpenRTB::Content>
 };
 
 template<>
+struct DefaultDescription<OpenRTB::Data>
+	: public StructureDescription<OpenRTB::Data> {
+	DefaultDescription();
+};
+
+template<>
+struct DefaultDescription<OpenRTB::Segment>
+	: public StructureDescription<OpenRTB::Segment> {
+	DefaultDescription();
+};
+	
+template<>
 struct DefaultDescription<OpenRTB::Context>
     : public StructureDescription<OpenRTB::Context> {
     DefaultDescription();
@@ -374,17 +404,6 @@ struct DefaultDescription<OpenRTB::Geo>
     DefaultDescription();
 };
 
-template<>
-struct DefaultDescription<OpenRTB::Data>
-    : public StructureDescription<OpenRTB::Data> {
-    DefaultDescription();
-};
-
-template<>
-struct DefaultDescription<OpenRTB::Segment>
-    : public StructureDescription<OpenRTB::Segment> {
-    DefaultDescription();
-};
 
 template<>
 struct DefaultDescription<OpenRTB::Bid>

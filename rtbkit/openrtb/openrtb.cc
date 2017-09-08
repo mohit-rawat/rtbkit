@@ -13,11 +13,21 @@ Impression::
 {
 }
 
+Metric::
+~Metric()
+{
+}	
+	
 BidRequest::
 ~BidRequest()
 {
-}
+}	
 
+	Source::
+	~Source()
+	{		
+	}
+	
 User::
 ~User()
 {
@@ -43,6 +53,11 @@ Banner::
 {
 }
 
+	Format::
+	~Format()
+	{
+	}
+	
 Video::
 ~Video()
 {
@@ -92,7 +107,7 @@ Content::
 ~Content()
 {
 }
-
+	
 Publisher::
 ~Publisher()
 {
