@@ -69,6 +69,8 @@ struct BidSwitchExchangeConnector: public OpenRTBExchangeConnector {
         std::string nurl;       ///< Win notice URL
         std::vector<std::string> adomain;    ///< Advertiser Domain
 		std::string adformat;    ///<required for sending appropriate responses for different adformats. not needed for mopub since it has crtype
+        std::set<int>  type;                  ///< Creative type Appendix 6.2
+        std::set<std::string> cat;
         struct {
             std::vector<int32_t> vendor_type_;
             std::set<int32_t> attribute_ ;

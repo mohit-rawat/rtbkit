@@ -215,6 +215,10 @@ getCreativeCompatibility(const Creative & creative,
         result.setIncompatible
 			("creative[].adformat is null",
 			 includeReasons);
+
+    getAttr(result, pconf, "type", crinfo->type, includeReasons);
+    getAttr(result, pconf, "cat", crinfo->cat , includeReasons);
+
     // Cache the information
     result.info = crinfo;
 
@@ -322,6 +326,26 @@ parseBidRequest(HttpAuctionHandler & connection,
     ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
     res.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory("2.2")->parseBidRequest(context, exchangeName(), exchangeName()));
 
+    //blocked category, required for mopub
+    std::vector<std::string> strv;
+    for (const auto& cat: res->blockedCategories)
+      strv.push_back(cat.val);
+    res->restrictions.addStrings("blockedCategories", strv);
+
+    std::vector<int> intv;
+    for (auto& spot: res->imp) {
+      if(spot.banner.get()){
+	for (const auto& t: spot.banner->btype) {
+	  intv.push_back (t.val);
+	}
+	spot.restrictions.addInts("blockedTypes", intv);
+	intv.clear();
+	for (const auto& a: spot.banner->battr) {
+	  intv.push_back (a.val);
+	};
+      }
+    }
+
 	for(int i = 0; i< res->imp.size(); i++){
 //operator overloading (for ==)is there for datacratic::optional(struct of native)
 		if(res->imp[i].native == NULL){}else{
@@ -424,7 +448,23 @@ setSeatBid(Auction const & auction,
     b.id = Id(auction.id, auction.request->imp[0].id);
     b.impid = auction.request->imp[spotNum].id;
     b.price.val = USD_CPM(resp.price.maxPrice);
-    b.adm = configuration_.expand(crinfo->adm, {creative, resp, *auction.request, spotNum});
+    if(*(crinfo->type.begin())==3){
+      std::string i = crinfo->adm;
+      std::string pubid = "";
+      std::string exchange = auction.request->ext["ssp"].asString();
+      if(auction.request->app != NULL){
+	pubid = exchange + "_" + auction.request->app->id.toString();
+      }else if(auction.request->site != NULL){
+	pubid = exchange + "_" + auction.request->site->id.toString();
+      }
+      if(!(pubid.empty())){
+	i.replace(i.find("${EX_PUB}"), 9, pubid);
+      }
+      i.replace(i.find("${DEV_ID}"), 9, auction.request->ext["audience"].asString());
+      i.replace(i.find("${DEV_ID}"), 9, auction.request->ext["audience"].asString());
+      b.adm = i;
+    }
+    else{b.adm = configuration_.expand(crinfo->adm, {creative, resp, *auction.request, spotNum});}    
     b.nurl = configuration_.expand(crinfo->nurl, {creative, resp, *auction.request, spotNum});
     b.adid = crinfo->adid;
     b.adomain = crinfo->adomain;
@@ -533,6 +573,23 @@ bidRequestCreativeFilter(const BidRequest & request,
         return false ;
     }
 
+    for (const auto& spot: request.imp) {
+      const auto& blocked_types = spot.restrictions.get("blockedTypes");
+      for (const auto& t: crinfo->type)
+	if (blocked_types.contains(t)) {
+	  this->recordHit ("blockedType");
+	  return false;
+	}
+    }
+    
+    // check for blocked content categories
+    const auto& blocked_categories = request.restrictions.get("blockedCategories");
+    for (const auto& cat: crinfo->cat)
+      if (blocked_categories.contains(cat)) {
+	this->recordHit ("blockedCategory");
+	return false;
+      }
+    
     // check for vendors
     for (const auto vendor: crinfo->Google.vendor_type_) {
         if (0==gobj_parsed.allowed_vendor_type.count(vendor)) {
