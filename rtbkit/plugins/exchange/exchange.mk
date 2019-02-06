@@ -23,5 +23,8 @@ $(eval $(call library,fbx_exchange,fbx_exchange_connector.cc,exchange bid_test_u
 $(eval $(call library,adx_exchange,adx_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,rtbkit_exchange,rtbkit_exchange_connector.cc,openrtb_exchange))
 $(eval $(call library,casale_exchange,casale_exchange_connector.cc,openrtb_exchange))
+$(eval $(call library,afmobi_exchange,afmobi_exchange_connector.cc,openrtb_exchange))
+$(eval $(call library,adcolony_exchange,adcolony_exchange_connector.cc,openrtb_exchange))
+$(eval $(call library,avocarrot_exchange,avocarrot_exchange_connector.cc,openrtb_exchange))
 
 $(eval $(call include_sub_make,exchange_testing,testing,exchange_testing.mk))

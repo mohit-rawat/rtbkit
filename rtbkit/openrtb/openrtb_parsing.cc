@@ -460,6 +460,7 @@ DefaultDescription()
              new StringIdDescription());
     addField("nurl", &Bid::nurl, "Win notice/ad markup URL");
     addField("adm", &Bid::adm, "Ad markup");
+    addField("video_url", &Bid::video_url, "video url for adx");
     addField("adomain", &Bid::adomain, "Advertiser domain(s)");
     addField("iurl", &Bid::iurl, "Image URL for content checking");
     addField("cid", &Bid::cid, "Campaign ID",

@@ -53,15 +53,12 @@ parseBidRequest(HttpAuctionHandler & connection,
                 const HttpHeader & header,
                 const std::string & payload)
 {
-  std::cout<<"smaato check 1"<<std::endl;
     std::shared_ptr<BidRequest> none;
-
     size_t found = header.queryParams.uriEscaped().find(SmaatoExchangeConnector::nobid);
     if (found != string::npos) {
       connection.dropAuction("nobid");
       return none;
     }   
-  std::cout<<"smaato check 2"<<std::endl;
     // Check for JSON content-type
     if (!header.contentType.empty()) {
         static const std::string delimiter = ";";
@@ -80,13 +77,11 @@ parseBidRequest(HttpAuctionHandler & connection,
 
         if(content != "application/json") {
             connection.sendErrorResponse("UNSUPPORTED_CONTENT_TYPE", "The request is required to use the 'Content-Type: application/json' header");
-	    std::cout<<"smaato check 3"<<std::endl;
             return none;
         }
     }
     else {
         connection.sendErrorResponse("MISSING_CONTENT_TYPE_HEADER", "The request is missing the 'Content-Type' header");
-	std::cout<<"smaato check 4"<<std::endl;
         return none;
     }
 
@@ -101,21 +96,18 @@ parseBidRequest(HttpAuctionHandler & connection,
     std::string openRtbVersion = it->second;
     if (openRtbVersion != "2.0 final") {
         connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.0 of the OpenRTB protocol but requested " + openRtbVersion);
-	std::cout<<"smaato check 5"<<std::endl;
         return none;
     }
     openRtbVersion = "2.0";
     if(payload.empty()) {
         this->recordHit("error.emptyBidRequest");
         connection.sendErrorResponse("EMPTY_BID_REQUEST", "The request is empty");
-	std::cout<<"smaato check "<<std::endl;
         return none;
     }
 
     // Parse the bid request
     std::shared_ptr<BidRequest> result;
     try {
-      std::cout<<"smaato check 6"<<std::endl;
         ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
         result.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory(openRtbVersion)->parseBidRequest(context,
                                                                                               exchangeName(),
@@ -128,7 +120,6 @@ parseBidRequest(HttpAuctionHandler & connection,
     catch(...) {
         throw;
     }
-    std::cout<<"smaato check 7"<<std::endl;
     // per slot: blocked type and attribute;
     std::vector<int> intv;
     for (auto& spot: result->imp) {
@@ -162,15 +153,13 @@ parseBidRequest(HttpAuctionHandler & connection,
 	  //	  std::cout<<"network : "<<exNet<<std::endl;
 	  result->device->carrier = OpenRTBExchangeConnector::changeNetworkName(exNet);
 	}
-	
+	//	std::cout<<result->toJson()<<std::endl;
 	OpenRTBExchangeConnector::getAudienceId(result);
-
 	OpenRTBExchangeConnector::getExchangeName(result);
 
 	if(result->ext["udi"].isMember("imei")){
 		OpenRTBExchangeConnector::getIMEIcode(result);
 	};
-  std::cout<<"smaato check 8"<<std::endl;
 
     return result;
 }
@@ -286,6 +275,7 @@ ExchangeConnector::ExchangeCompatibility
 	  for (const auto& cat: crinfo->cat)
 		  if (blocked_categories.contains(cat)) {
 			  this->recordHit ("blockedCategory");
+			  //			  std::cout<<"creativeexchangefilter 1 "<<cat<<std::endl;
 			  return false;
 		  }
 //badv
@@ -293,6 +283,7 @@ ExchangeConnector::ExchangeCompatibility
 	  for (const auto& adomain: crinfo->adomain)
 		  if (badv.contains(adomain)) {
 			  this->recordHit ("blockedAdvertiser");
+			  //			  std::cout<<"creativeexchangefilter 2"<<std::endl;
 			  return false;
 		  }
 
@@ -303,12 +294,14 @@ ExchangeConnector::ExchangeCompatibility
         for (const auto& t: crinfo->type)
             if (blocked_types.contains(t)) {
                 this->recordHit ("blockedType");
+		//			  std::cout<<"creativeexchangefilter 3"<<std::endl;
                 return false;
             }
         const auto& blocked_attr = spot.restrictions.get("blockedAttrs");
         for (const auto& a: crinfo->attr)
             if (blocked_attr.contains(a)) {
                 this->recordHit ("blockedAttr");
+		//	  std::cout<<"creativeexchangefilter 4"<<std::endl;
                 return false;
             }
 
@@ -317,6 +310,7 @@ ExchangeConnector::ExchangeCompatibility
               if (std::find(crinfo->mimeTypes.begin(), crinfo->mimeTypes.end(), mimeType.type)
                       != crinfo->mimeTypes.end()) {
                   this->recordHit ("blockedMime");
+		  //	  std::cout<<"creativeexchangefilter 5"<<std::endl;
                   return true;
               }
 	}
@@ -379,7 +373,9 @@ setSeatBid(Auction const & auction,
     b.id = Id(auction.id, auction.request->imp[0].id);
     b.impid = auction.request->imp[spotNum].id;
     b.price.val = getAmountIn<CPM>(resp.price.maxPrice);
-    b.adm = crinfo->adm;
+    std::string adm = crinfo->adm;
+    adm.replace(adm.find("%7BAUDIENCE%7D"), 14, auction.request->ext["audience"].asString());
+    b.adm = adm;
     b.adomain = crinfo->adomain;
     b.nurl = crinfo->nurl;
     b.crid = crinfo->crid;

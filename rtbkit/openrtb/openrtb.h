@@ -1342,6 +1342,7 @@ struct Bid {
     Datacratic::Id adid;                      ///< Id of ad to be served if won
     Datacratic::UnicodeString nurl;                  ///< Win notice/ad markup URL
     Datacratic::UnicodeString adm;                   ///< Ad markup
+    Datacratic::UnicodeString video_url;             ///< required only for adx video
     std::vector<std::string> adomain;       ///< Advertiser domains
     Datacratic::UnicodeString iurl;                  ///< Image URL for content checking
     Datacratic::Id cid;                       ///< Campaign ID
