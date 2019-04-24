@@ -59,7 +59,7 @@ toBidRequest(const RTBKIT::BidRequest & br) {
         OpenRTB::Impression imp(spot);
 
         // Since it's openrtb 2.1, make sure none of the 2.n fields are added.
-        imp.pmp.reset();
+	//        imp.pmp.reset();
 
         if (imp.banner) {
             auto& banner = *imp.banner;
@@ -649,7 +649,6 @@ onDevice(OpenRTB::Device& device) {
 void
 OpenRTBBidRequestParser2point2::
 onBidRequest(OpenRTB::BidRequest & br) {
-
     // Call V1
     OpenRTBBidRequestParser::onBidRequest(br);
 
@@ -660,7 +659,6 @@ onBidRequest(OpenRTB::BidRequest & br) {
 void
 OpenRTBBidRequestParser2point2::
 onImpression(OpenRTB::Impression & imp) {
-
     // Deal with secure, business logic
     
     // Deal with PMP

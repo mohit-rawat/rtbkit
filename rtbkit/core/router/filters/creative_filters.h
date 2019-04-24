@@ -643,7 +643,7 @@ private:
 /******************************************************************************/
 /* CREATIVE PMP FILTER                                                   */
 /******************************************************************************/
-
+/*
 struct CreativePMPFilter : public CreativeFilter<CreativePMPFilter>
 {
     static constexpr const char* name = "CreativePMP";
@@ -685,6 +685,37 @@ private:
         auto it = dealFilter.find(dealId);
         return it == dealFilter.end() ? CreativeMatrix() : it->second;
     }
+};
+*/
+
+/******************************************************************************/
+/* CREATIVE PMP FILTER                                                   */
+/******************************************************************************/
+
+struct CreativePMPFilter : public IterativeCreativeFilter<CreativePMPFilter>
+{
+  static constexpr const char *name = "CreativePMP";
+  //  unsigned priority() const { return 10; }
+  bool filterCreative(FilterState &state, const AdSpot &spot,
+		      const AgentConfig &config, const Creative &creative) const{
+    if(spot.pmp){
+      //filter only if private_auction is 1
+      if(spot.pmp->privateAuction.val == 1){
+	//iterate over deals and check if dealid is matching
+	for(auto deal: spot.pmp->deals){
+	  if(config.dealID == deal.id.toString()){
+	    return true;
+	  }else{
+	    continue;
+	  }
+	}return false;
+      }else{
+	return true;
+      }
+    }else{
+      return true;
+    }
+  }
 };
 
 } // namespace RTBKIT

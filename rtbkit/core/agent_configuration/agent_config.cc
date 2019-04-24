@@ -567,6 +567,8 @@ createFromJson(const Json::Value & json)
         }
         else if (it.memberName() == "bidderInterface")
             newConfig.bidderInterface = it->asString();
+        else if (it.memberName() == "dealID")
+            newConfig.dealID = it->asString();
         else if (it.memberName() == "userPartition") {
             newConfig.userPartition.fromJson(*it);
         }
@@ -760,6 +762,8 @@ toJson(bool includeCreatives) const
 
     if (!bidderInterface.empty())
         result["bidderInterface"] = bidderInterface;
+    if (!dealID.empty())
+        result["dealID"] = dealID;
 
     if (!urlFilter.empty())
         result["urlFilter"] = urlFilter.toJson();

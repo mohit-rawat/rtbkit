@@ -284,6 +284,7 @@ struct AgentConfig {
     float minTimeAvailableMs;
 
     int maxInFlight;
+  std::string dealID;      ///<private market place(pmp) dealid
 
     std::string bidderInterface;
 
