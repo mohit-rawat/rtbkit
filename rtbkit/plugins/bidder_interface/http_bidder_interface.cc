@@ -324,6 +324,7 @@ void HttpBidderInterface::sendAuctionMessage(std::shared_ptr<Auction> const & au
                              theBid.creativeIndex = creativeIndex;
                              theBid.price = USD_CPM(bid.price.val);
 							 theBid.ext["assetList"] = bid.ext["assetList"];
+							 theBid.ext["dealid"] = bid.ext["dealid"];
 							 
                              int spotIndex = indexOf(openRtbRequest.imp,
                                                     &OpenRTB::Impression::id, bid.impid);
