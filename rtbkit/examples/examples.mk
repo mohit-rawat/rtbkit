@@ -7,9 +7,11 @@
 #------------------------------------------------------------------------------#
 
 $(eval $(call library,augmentor_ex,augmentor_ex.cc,augmentor_base rtb bid_request aerospike agent_configuration))
+$(eval $(call library,msisdn_augmentor,msisdn_augmentor.cc,augmentor_base rtb bid_request aerospike agent_configuration))
 $(eval $(call library,mock_exchange,mock_exchange_connector.cc,exchange))
 
 $(eval $(call program,augmentor_ex_runner,augmentor_ex aerospike boost_program_options))
+$(eval $(call program,msisdn_augmentor_runner,msisdn_augmentor aerospike boost_program_options))
 $(eval $(call program,data_logger_ex,data_logger data_logger boost_program_options services))
 $(eval $(call program,bidding_agent_console,bidding_agent rtb_router boost_program_options services))
 $(eval $(call program,bidding_agent_ex,bidding_agent rtb_router boost_program_options services))
