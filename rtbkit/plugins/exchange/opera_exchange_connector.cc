@@ -173,13 +173,6 @@ getCreativeCompatibility(const Creative & creative,
 
     // 4.  Must have opera.adm that includes Opera's macro
     getAttr(result, pconf, "adm", crinfo->adm, includeReasons);
-    if (crinfo->adm.find("${AUCTION_PRICE}") == string::npos)
-        result.setIncompatible
-        ("creative[].providerConfig.opera.adm ad markup must contain "
-         "encrypted win price macro ${AUCTION_PRICE}",
-         includeReasons);
-
-    // 5.  Must have creative ID in opera.crid
     getAttr(result, pconf, "crid", crinfo->crid, includeReasons);
     if (!crinfo->crid)
         result.setIncompatible
@@ -206,9 +199,6 @@ getCreativeCompatibility(const Creative & creative,
 	}
 	if(creative.adformat == "video"){
 	  getAttr(result, vconf, "duration", crinfo->duration, includeReasons);
-	}
-	if(creative.adformat == "video" || creative.adformat == "native"){
-	  getAttr(result, pconf, "crtype", crinfo->crtype, includeReasons);
 	}
 
     // Cache the information
@@ -449,12 +439,10 @@ setSeatBid(Auction const & auction,
 	b.bundle = crinfo->bundle;
 	b.cat = crinfo->cat;
 
-	b.ext["crtype"] = crinfo->crtype;
-	b.ext["duration"] = crinfo->duration;
 	b.psattr = crinfo->attr;
-
+	/*
 	int j = 0;
-	if(b.ext["crtype"] == "native"){
+		if(b.ext["crtype"] == "native"){
 		for(auto i:crinfo->imptrackers){
 			b.ext["admnative"]["native"]["imptrackers"][j] = i;
 			j++;
@@ -521,7 +509,7 @@ setSeatBid(Auction const & auction,
 		}
 		b.ext["admnative"]["native"]["assets"] = admAsset;
 	}
-}
+	*/}
 
 template <typename T>
 bool disjoint (const set<T>& s1, const set<T>& s2) {
