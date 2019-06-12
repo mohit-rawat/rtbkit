@@ -88,7 +88,7 @@ struct InitFilters
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::CreativePMPFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::AdformatFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::VideoFilter>();
-        RTBKIT::FilterRegistry::registerFilter<RTBKIT::InterstitialFilter>();
+	       RTBKIT::FilterRegistry::registerFilter<RTBKIT::InterstitialFilter>(); //needed for only adx video
 		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeTitleFilter>();
 		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeImageFilter>();
 		RTBKIT::FilterRegistry::registerFilter<RTBKIT::NativeDataFilter>();

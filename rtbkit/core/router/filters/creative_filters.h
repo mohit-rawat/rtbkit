@@ -28,6 +28,9 @@ struct VideoFilter : public IterativeCreativeFilter<VideoFilter>
 	unsigned priority() const { return 10; }
 	bool filterCreative(FilterState &state, const AdSpot &spot,
 						const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="video" && (spot.banner||spot.banner)){
+	return true;
+      }else{
 		if(spot.video){
 		  if(spot.video->startdelay.val==0){
 		    std::cout<<"startdelay is there "<<spot.video->startdelay.val<<std::endl;}
@@ -53,6 +56,7 @@ struct VideoFilter : public IterativeCreativeFilter<VideoFilter>
 				}
 			}return false;
 		}return true;
+      }
 	}
 };			
 /*
@@ -120,6 +124,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     unsigned priority() const { return 0xF303; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
 		if(spot.native){
       //      if (creative.adformat=="native"){
 			std::cerr<<"nativetitle ====1===="<<std::endl;
@@ -146,6 +153,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 				}
 			}
 		}return true;
+      }
 	}
   };
 
@@ -160,6 +168,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 			const AgentConfig &config, const Creative &creative) const{
       //      std::cerr<<"CreativeMatrix : "<<state.creatives(0).print()<<std::endl;
       //      std::cerr<<"impression(apspot).ext : "<<spot.ext<<std::endl;
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
       if(spot.native){
 	std::cerr<<"nativeimage ====1===="<<std::endl;
 	auto imageassets = creative.nativeConfig["assets"]["images"];
@@ -190,6 +201,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 	return true;
       }
       return true;
+      }
     }
   };
 
@@ -204,7 +216,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     unsigned priority() const { return 0xF305; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
-
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
       //      if (creative.adformat=="native"){
       if(spot.native){
 	//          std::cerr<<"====1===="<<std::endl;
@@ -233,6 +247,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 	return true;
       }
       return true;
+      }
     }
   };
 
@@ -246,27 +261,31 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     unsigned priority() const { return 0xF304; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
-      //      if (creative.adformat=="native"){
-      if(spot.native){
-	std::cerr<<"====1===="<<std::endl;
-	for(auto asset : spot.native->request.native.assets){
-	  if(asset.video){
-	    std::cerr<<"====2===="<<std::endl;
-	    if(asset.required.val == true){
-	      std::cerr<<"====3===="<<std::endl;
-	      if(
-		 (asset.video->minduration.val <= creative.nativeConfig["assets"]["video"]["duration"].asInt()) && (asset.video->maxduration.val >= creative.nativeConfig["assets"]["video"]["duration"].asInt()) && (std::find(asset.video->mimes.begin(), asset.video->mimes.end(), creative.nativeConfig["assets"]["video"]["mimetype"].asString()) != asset.video->mimes.end()) && (std::find(asset.video->protocols.begin(), asset.video->protocols.end(), creative.nativeConfig["assets"]["video"]["protocol"].asInt()) != asset.video->protocols.end())){
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
+	//      if (creative.adformat=="native"){
+	if(spot.native){
+	  std::cerr<<"====1===="<<std::endl;
+	  for(auto asset : spot.native->request.native.assets){
+	    if(asset.video){
+	      std::cerr<<"====2===="<<std::endl;
+	      if(asset.required.val == true){
+		std::cerr<<"====3===="<<std::endl;
+		if(
+		   (asset.video->minduration.val <= creative.nativeConfig["assets"]["video"]["duration"].asInt()) && (asset.video->maxduration.val >= creative.nativeConfig["assets"]["video"]["duration"].asInt()) && (std::find(asset.video->mimes.begin(), asset.video->mimes.end(), creative.nativeConfig["assets"]["video"]["mimetype"].asString()) != asset.video->mimes.end()) && (std::find(asset.video->protocols.begin(), asset.video->protocols.end(), creative.nativeConfig["assets"]["video"]["protocol"].asInt()) != asset.video->protocols.end())){
+		  return true;
+		}else{return false;}
+	      }
+	      else{
 		return true;
-	      }else{return false;}
-	    }
-	    else{
-	      return true;
+	      }
 	    }
 	  }
-	}
-      }else{
-	return true;
-      }return true;
+	}else{
+	  return true;
+	}return true;
+      }
     }
   };
 
@@ -280,6 +299,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		unsigned priority() const { return 0xF302; }
 		bool filterCreative(FilterState &state, const AdSpot &spot,
 							const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
 			if(spot.native){
 				std::cerr<<"====1===="<<std::endl;
 				if(creative.nativeConfig["layout"].asInt()){
@@ -290,6 +312,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 			}else{
 				return true;
 			}return true;
+      }
 		}
 	};
 
@@ -303,6 +326,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 		unsigned priority() const { return 0xF302; }
 		bool filterCreative(FilterState &state, const AdSpot &spot,
 							const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
 			if(spot.native){
 				std::cerr<<"====1===="<<std::endl;
 				if(creative.nativeConfig["adunit"].asInt()){
@@ -315,6 +341,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 			}else{
 				return true;
 			}return true;
+      }
 		}
 	};	
 	
@@ -328,6 +355,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
 	  unsigned priority() const { return 0xF302; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
       if(spot.native){
 	std::cerr<<"====1===="<<std::endl;
 	if(creative.nativeConfig["context"].asInt()){
@@ -338,6 +368,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
       }else{
 	return true;
       }return true;
+      }
     }
   };
 
@@ -351,6 +382,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     unsigned priority() const { return 0xF301; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
       if(spot.native){
 	std::cerr<<"====1===="<<std::endl;
 	if(creative.nativeConfig["contextsubtype"].asInt()){
@@ -361,6 +395,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
       }else{
 	return true;
       }return true;
+      }
     }
   };
 
@@ -374,6 +409,9 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
     unsigned priority() const { return 0xF300; }
     bool filterCreative(FilterState &state, const AdSpot &spot,
 			const AgentConfig &config, const Creative &creative) const{
+      if(creative.adformat!="native" && (spot.banner||spot.video)){
+	return true;
+      }else{
       if(spot.native){
 	std::cerr<<"====1===="<<std::endl;
 	if(creative.nativeConfig["plcmttype"].asInt()){
@@ -384,6 +422,7 @@ struct AdformatFilter : public IterativeCreativeFilter<AdformatFilter>
       }else{
 	return true;
       }return true;
+      }
     }
   };
 
@@ -691,7 +730,54 @@ private:
 /******************************************************************************/
 /* CREATIVE PMP FILTER                                                   */
 /******************************************************************************/
-
+struct CreativePMPFilter : public IterativeCreativeFilter<CreativePMPFilter>
+{
+  static constexpr const char *name = "CreativePMP";
+  //  unsigned priority() const { return 10; }
+  bool filterCreative(FilterState &state, const AdSpot &spot,
+		      const AgentConfig &config, const Creative &creative) const{
+    /*
+     check if config has dealid. if yes check for matching dealids in bidrequest
+     and return true if matching dealids are there.
+     if no matching deals are there return false.
+     if config has no deal id, check if request has pmp
+     if config dont have dealid --
+     if pmp is there check if it is only for private auction.
+     if only private auction return false, else return true
+     if pmp is not there in config in addition with request, return true
+     */
+    //    if(config.dealID!=NULL){
+    if(!config.dealID.empty()){
+      if(spot.pmp){
+	for(auto deal: spot.pmp->deals){
+          if(config.dealID == deal.id.toString()){
+	    std::cout<<"pmp filter check 1"<<std::endl;
+            return true;
+          }else{
+            continue;
+          }
+        }
+	std::cout<<"pmp filter check 2"<<std::endl;
+	return false;
+      }else{
+	std::cout<<"pmp filter check 3"<<std::endl;
+	return false;
+      }
+    }else if(spot.pmp){
+      if(spot.pmp->privateAuction.val == 1){
+	std::cout<<"pmp filter check 4"<<std::endl;
+	return false;
+      }else{
+	std::cout<<"pmp filter check 5"<<std::endl;
+	return true;
+      }
+    }else{
+      std::cout<<"pmp filter check 6"<<std::endl;
+      return true;
+    }
+  }
+};
+  /*
 struct CreativePMPFilter : public IterativeCreativeFilter<CreativePMPFilter>
 {
   static constexpr const char *name = "CreativePMP";
@@ -717,5 +803,5 @@ struct CreativePMPFilter : public IterativeCreativeFilter<CreativePMPFilter>
     }
   }
 };
-
+*/
 } // namespace RTBKIT
