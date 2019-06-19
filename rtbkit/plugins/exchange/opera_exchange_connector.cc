@@ -258,7 +258,7 @@ getCreativeCompatibility(const Creative & creative,
   {
     std::shared_ptr<BidRequest> none;
     
-    
+    std::cout<<"bidrequest in opera "<<payload<<std::endl;    
     // Check for JSON content-type
     if (!header.contentType.empty()) {
       static const std::string delimiter = ";";
@@ -277,11 +277,13 @@ getCreativeCompatibility(const Creative & creative,
       
       if(content != "application/json") {
 	connection.sendErrorResponse("UNSUPPORTED_CONTENT_TYPE", "The request is required to use the 'Content-Type: application/json' header");
+	std::cout<<"opera 400 Error UNSUPPORTED_CONTENT_TYPE"<<std::endl;
 	return none;
       }
     }
     else {
       connection.sendErrorResponse("MISSING_CONTENT_TYPE_HEADER", "The request is missing the 'Content-Type' header");
+      std::cout<<"opera 400 Error MISSING_CONTENT_TYPE_HEADER"<<std::endl;
       return none;
     }
     
@@ -289,6 +291,7 @@ getCreativeCompatibility(const Creative & creative,
     auto it = header.headers.find("x-openrtb-version");
     if (it == header.headers.end()) {
       connection.sendErrorResponse("MISSING_OPENRTB_HEADER", "The request is missing the 'x-openrtb-version' header");
+      std::cout<<"opera 400 Error MISSING_OPENRTB_HEADER"<<std::endl;
       return none;
     }
     
@@ -296,19 +299,30 @@ getCreativeCompatibility(const Creative & creative,
     std::string openRtbVersion = it->second;
     if (openRtbVersion != "2.5") {
       connection.sendErrorResponse("UNSUPPORTED_OPENRTB_VERSION", "The request is required to be using version 2.5 of the OpenRTB protocol but requested " + openRtbVersion);
+      std::cout<<"opera 400 Error MISSING_OPENRTB_HEADER"<<std::endl;
       return none;
     }
     
     if(payload.empty()) {
       this->recordHit("error.emptyBidRequest");
       connection.sendErrorResponse("EMPTY_BID_REQUEST", "The request is empty");
+      std::cout<<"opera 400 Error EMPTY_BID_REQUEST"<<std::endl;
       return none;
     }
-    
+    std::string abc = payload;
+    //		std::cout<<escape_json(abc)<<std::endl;
+    char *cstr = &abc[0u];
+    char *cstr1;
+    char *cstr2;
+    char *cstr3;
+    cstr1 = str_replace(cstr, (char*)"\\", (char*)"");
+    cstr2 = str_replace(cstr1, (char*)"\"{", (char*)"{");
+    cstr3 = str_replace(cstr2, (char*)"}\"", (char*)"}");
+    abc = cstr3;
     // Parse the bid request
     std::shared_ptr<BidRequest> result;
     try {
-      ML::Parse_Context context("Bid Request", payload.c_str(), payload.size());
+      ML::Parse_Context context("Bid Request", cstr3, abc.size());
       result.reset(OpenRTBBidRequestParser::openRTBBidRequestParserFactory(openRtbVersion)->parseBidRequest(context,
 													    exchangeName(),
 													    exchangeName()));
@@ -320,8 +334,27 @@ getCreativeCompatibility(const Creative & creative,
     catch(...) {
       throw;
     }
+    free(cstr1);
+    free(cstr2);
+    free(cstr3);   
     
-    // per slot: blocked type and attribute;
+    for(int i = 0; i< result->imp.size(); i++){
+      if(result->imp[i].native == NULL){}else{
+	//			res->imp[i].native->request.native.ver = res->imp[i].native->request.ver;
+	result->imp[i].native->request.native.layout = result->imp[i].native->request.layout;
+	result->imp[i].native->request.native.adunit = result->imp[i].native->request.adunit;
+	result->imp[i].native->request.native.context = result->imp[i].native->request.context;
+	result->imp[i].native->request.native.contextsubtype = result->imp[i].native->request.contextsubtype;
+	result->imp[i].native->request.native.plcmttype = result->imp[i].native->request.plcmttype;
+	result->imp[i].native->request.native.plcmtcnt = result->imp[i].native->request.plcmtcnt;
+	result->imp[i].native->request.native.seq = result->imp[i].native->request.seq;
+	result->imp[i].native->request.native.ext = result->imp[i].native->request.ext;
+	for(auto j = result->imp[i].native->request.assets.begin(); j!=result->imp[i].native->request.assets.end(); j++){
+	  result->imp[i].native->request.native.assets.push_back(*j);
+	}
+      }
+    }
+	// per slot: blocked type and attribute;
     std::vector<int> intv;
     for (auto& spot: result->imp) {
       if(spot.banner.get()){
@@ -342,6 +375,7 @@ getCreativeCompatibility(const Creative & creative,
     if(header.headers.end() != verbose) {
       if(verbose->second == "1") {
 	if(!result->auctionId.notNull()) {
+	  std::cout<<"opera 400 Error MISSING_ID"<<std::endl;
 	  connection.sendErrorResponse("MISSING_ID", "The bid request requires the 'id' field");
 	  return none;
 	}
@@ -374,7 +408,7 @@ getCreativeCompatibility(const Creative & creative,
     //		cout<<"Bidrequest after parsing in adx exchange connector : "<<result->toJson()<<endl;
     return result;
   }
-
+  
 void
 OperaExchangeConnector::
 setSeatBid(Auction const & auction,
@@ -436,82 +470,82 @@ setSeatBid(Auction const & auction,
     b.crid = crinfo->crid;
     b.iurl = cpinfo->iurl;
     b.nurl = crinfo->nurl;
-	b.bundle = crinfo->bundle;
-	b.cat = crinfo->cat;
-
-	b.psattr = crinfo->attr;
-	/*
-	int j = 0;
-		if(b.ext["crtype"] == "native"){
-		for(auto i:crinfo->imptrackers){
-			b.ext["admnative"]["native"]["imptrackers"][j] = i;
-			j++;
-		};
-	}else{
-		for(auto i:crinfo->imptrackers){
-			b.ext["imptrackers"][j] = i;
-			j++;
-		};
-	};
-//additional fields required for native	
-	if(b.ext["crtype"] == "native"){
-		// Get the nativeConfig data for this creative
-		auto ninfo = creative.nativeConfig;
-		Json::Value AssetList = resp.bidData[spotNum].ext["assetList"];
-
-		b.ext["admnative"]["native"]["link"]["url"] = ninfo["link"]["url"];
-
-		Json::Value admAsset(Json::arrayValue);
-		
-//populating title asset
-		if(AssetList.isMember("title")){
-			for(auto i : AssetList["title"].getMemberNames()){
-				Json::Value temptitleAsset;
-				temptitleAsset["id"] = std::stoi(i);
-				for(Json::Value j : ninfo["assets"]["titles"]){
-					if( j["id"].asInt() == AssetList["title"][i].asInt()){
-						temptitleAsset["title"]["text"] = j["text"];
-						break;
-					}
-				};
-				admAsset.append(temptitleAsset);
-			}
-		}
-
-//populating image assets		
-		if(AssetList.isMember("images")){
-			for(auto i : AssetList["images"].getMemberNames()){
-				Json::Value tempimgAsset;
-				tempimgAsset["id"] = std::stoi(i);
-				for(Json::Value j : ninfo["assets"]["images"]){
-					if( j["id"].asInt() == AssetList["images"][i].asInt()){
-						tempimgAsset["img"]["url"] = j["url"];
-						break;
-					}
-				};
-				admAsset.append(tempimgAsset);
-			}
-		}
-
-//populating data assets
-		if(AssetList.isMember("data")){
-			for(auto i : AssetList["data"].getMemberNames()){
-				Json::Value tempdataAsset;
-				tempdataAsset["id"] = std::stoi(i);
-				for(Json::Value j : ninfo["assets"]["data"]){
-					if( j["id"].asInt() == AssetList["data"][i].asInt()){
-						tempdataAsset["data"]["value"] = j["value"];
-						break;
-					}
-				};
-				admAsset.append(tempdataAsset);
-			}
-		}
-		b.ext["admnative"]["native"]["assets"] = admAsset;
+    b.bundle = crinfo->bundle;
+    b.cat = crinfo->cat;
+    
+    b.psattr = crinfo->attr;
+    
+    int j = 0;
+    if(b.ext["crtype"] == "native"){
+      for(auto i:crinfo->imptrackers){
+	b.ext["admnative"]["native"]["imptrackers"][j] = i;
+	j++;
+      };
+    }else{
+      for(auto i:crinfo->imptrackers){
+	b.ext["imptrackers"][j] = i;
+	j++;
+      };
+    };
+    //additional fields required for native	
+    if(b.ext["crtype"] == "native"){
+      // Get the nativeConfig data for this creative
+      auto ninfo = creative.nativeConfig;
+      Json::Value AssetList = resp.bidData[spotNum].ext["assetList"];
+      
+      b.ext["admnative"]["native"]["link"]["url"] = ninfo["link"]["url"];
+      
+      Json::Value admAsset(Json::arrayValue);
+      
+      //populating title asset
+      if(AssetList.isMember("title")){
+	for(auto i : AssetList["title"].getMemberNames()){
+	  Json::Value temptitleAsset;
+	  temptitleAsset["id"] = std::stoi(i);
+	  for(Json::Value j : ninfo["assets"]["titles"]){
+	    if( j["id"].asInt() == AssetList["title"][i].asInt()){
+	      temptitleAsset["title"]["text"] = j["text"];
+	      break;
+	    }
+	  };
+	  admAsset.append(temptitleAsset);
 	}
-	*/}
-
-template <typename T>
+      }
+      
+      //populating image assets		
+      if(AssetList.isMember("images")){
+	for(auto i : AssetList["images"].getMemberNames()){
+	  Json::Value tempimgAsset;
+	  tempimgAsset["id"] = std::stoi(i);
+	  for(Json::Value j : ninfo["assets"]["images"]){
+	    if( j["id"].asInt() == AssetList["images"][i].asInt()){
+	      tempimgAsset["img"]["url"] = j["url"];
+	      break;
+	    }
+	  };
+	  admAsset.append(tempimgAsset);
+	}
+      }
+      
+      //populating data assets
+      if(AssetList.isMember("data")){
+	for(auto i : AssetList["data"].getMemberNames()){
+	  Json::Value tempdataAsset;
+	  tempdataAsset["id"] = std::stoi(i);
+	  for(Json::Value j : ninfo["assets"]["data"]){
+	    if( j["id"].asInt() == AssetList["data"][i].asInt()){
+	      tempdataAsset["data"]["value"] = j["value"];
+	      break;
+	    }
+	  };
+	  admAsset.append(tempdataAsset);
+	}
+      }
+      b.ext["admnative"]["native"]["assets"] = admAsset;
+    }
+}
+  
+  template <typename T>
 bool disjoint (const set<T>& s1, const set<T>& s2) {
     auto i = s1.begin(), j = s2.begin();
     while (i != s1.end() && j != s2.end()) {
