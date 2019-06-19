@@ -285,7 +285,6 @@ struct AgentConfig {
 
     int maxInFlight;
   std::string dealID;      ///<private market place(pmp) dealid
-
     std::string bidderInterface;
 
     std::vector<std::string> requiredIds;
@@ -294,6 +293,7 @@ struct AgentConfig {
     IncludeExclude<CachedRegex<boost::regex, std::string> > urlFilter;
     IncludeExclude<CachedRegex<boost::regex, std::string> > languageFilter;
 	IncludeExclude<CachedRegex<boost::regex, std::string> > operatingSystemFilter;
+  IncludeExclude<CachedRegex<boost::regex, std::string> > audienceIdFilter; ///<for opera requests
 	IncludeExclude<CachedRegex<boost::regex, std::string> > carrierFilter;
 	IncludeExclude<CachedRegex<boost::regex, std::string> > devicemakeFilter;
 	IncludeExclude<CachedRegex<boost::regex, std::string> > devicemodelFilter;

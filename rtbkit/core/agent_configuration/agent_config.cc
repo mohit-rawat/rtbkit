@@ -582,6 +582,8 @@ createFromJson(const Json::Value & json)
             newConfig.languageFilter.fromJson(*it, "languageFilter");
         else if (it.memberName() == "operatingSystemFilter")
             newConfig.operatingSystemFilter.fromJson(*it, "operatingSystemFilter");
+        else if (it.memberName() == "audienceIdFilter")
+            newConfig.audienceIdFilter.fromJson(*it, "audienceIdFilter");
         else if (it.memberName() == "carrierFilter")
             newConfig.carrierFilter.fromJson(*it, "carrierFilter");
         else if (it.memberName() == "devicemakeFilter")
@@ -764,7 +766,6 @@ toJson(bool includeCreatives) const
         result["bidderInterface"] = bidderInterface;
     if (!dealID.empty())
         result["dealID"] = dealID;
-
     if (!urlFilter.empty())
         result["urlFilter"] = urlFilter.toJson();
     if (!hostFilter.empty())
@@ -775,6 +776,8 @@ toJson(bool includeCreatives) const
         result["languageFilter"] = languageFilter.toJson();
     if (!operatingSystemFilter.empty())
         result["operatingSystemFilter"] = operatingSystemFilter.toJson();
+    if (!audienceIdFilter.empty())
+        result["audienceIdFilter"] = audienceIdFilter.toJson();
     if (!carrierFilter.empty())
         result["carrierFilter"] = carrierFilter.toJson();
     if (!devicemakeFilter.empty())

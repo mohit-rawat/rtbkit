@@ -230,6 +230,35 @@ private:
 };
 
 /******************************************************************************/
+/* AUDIENCEID FILTER                                                          */
+/******************************************************************************/
+//only needed for opera requests. Similar to dealid but sent inside toplevel request
+struct AudienceIdFilter : public FilterBaseT<AudienceIdFilter>
+{
+    static constexpr const char* name = "AudienceId";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.audienceIdFilter);
+		std::cout<<"==================account tostring=========================== : "<<config.account.toString()<<std::endl;
+    }
+
+    void filter(FilterState& state) const
+    {
+		if(state.request.ext ==NULL){
+			state.narrowConfigs(impl.filter("noid"));
+		}else{
+			state.narrowConfigs(impl.filter(state.request.ext["audienceID"].asString()));
+		}
+    }
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+
+/******************************************************************************/
 /* CARRIER FILTER                                                             */
 /******************************************************************************/
 
@@ -433,11 +462,20 @@ struct ExchangePreFilter : public IterativeFilter<ExchangePreFilter>
 
     bool filterConfig(FilterState& state, const AgentConfig& config) const
     {
+      std::cout<<"exchangepre check 1"<<std::endl;
         if (!state.exchange) return false;
-
         auto it = config.providerData.find(state.exchange->exchangeName());
+	std::cout<<state.exchange->exchangeName()<<std::endl;
+      std::cout<<"exchangepre check 2"<<std::endl;
+      for (auto const& x : config.providerData)
+	{
+	  std::cout << x.first  // string (key)
+		    << ':' 
+		    << x.second // string's value 
+		    << std::endl ;
+	}
         if (it == config.providerData.end()) return false;
-
+      std::cout<<"exchangepre check 3"<<std::endl;
         return state.exchange->bidRequestPreFilter(
                 state.request, config, it->second.get());
     }
