@@ -343,6 +343,7 @@ struct InitFilters
 
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::LatLongDevFilter>();
         RTBKIT::FilterRegistry::registerFilter<RTBKIT::AudienceIdFilter>();
+        RTBKIT::FilterRegistry::registerFilter<RTBKIT::CategoryFilter>();
     }
 
 } initFilters;

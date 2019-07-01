@@ -293,6 +293,7 @@ struct AgentConfig {
     IncludeExclude<CachedRegex<boost::regex, std::string> > urlFilter;
     IncludeExclude<CachedRegex<boost::regex, std::string> > languageFilter;
 	IncludeExclude<CachedRegex<boost::regex, std::string> > operatingSystemFilter;
+	IncludeExclude<CachedRegex<boost::regex, std::string> > categoryFilter;
   IncludeExclude<CachedRegex<boost::regex, std::string> > audienceIdFilter; ///<for opera requests
 	IncludeExclude<CachedRegex<boost::regex, std::string> > carrierFilter;
 	IncludeExclude<CachedRegex<boost::regex, std::string> > devicemakeFilter;

@@ -582,6 +582,8 @@ createFromJson(const Json::Value & json)
             newConfig.languageFilter.fromJson(*it, "languageFilter");
         else if (it.memberName() == "operatingSystemFilter")
             newConfig.operatingSystemFilter.fromJson(*it, "operatingSystemFilter");
+        else if (it.memberName() == "categoryFilter")
+            newConfig.categoryFilter.fromJson(*it, "categoryFilter");
         else if (it.memberName() == "audienceIdFilter")
             newConfig.audienceIdFilter.fromJson(*it, "audienceIdFilter");
         else if (it.memberName() == "carrierFilter")
@@ -776,6 +778,8 @@ toJson(bool includeCreatives) const
         result["languageFilter"] = languageFilter.toJson();
     if (!operatingSystemFilter.empty())
         result["operatingSystemFilter"] = operatingSystemFilter.toJson();
+    if (!categoryFilter.empty())
+        result["categoryFilter"] = categoryFilter.toJson();
     if (!audienceIdFilter.empty())
         result["audienceIdFilter"] = audienceIdFilter.toJson();
     if (!carrierFilter.empty())

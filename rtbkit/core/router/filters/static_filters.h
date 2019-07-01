@@ -230,6 +230,41 @@ private:
 };
 
 /******************************************************************************/
+/* CATEGORY FILTER                                                            */
+/******************************************************************************/
+
+struct CategoryFilter : public FilterBaseT<CategoryFilter>
+{
+    static constexpr const char* name = "Category";
+    unsigned priority() const { return 10; }
+
+    void setConfig(unsigned configIndex, const AgentConfig& config, bool value)
+    {
+        impl.setIncludeExclude(configIndex, value, config.categoryFilter);
+		std::cout<<"==================account tostring=========================== : "<<config.account.toString()<<std::endl;
+    }
+
+    void filter(FilterState& state) const
+    {
+      std::string cats = "nocat";
+      if(state.request.site !=NULL){
+	for(auto cat : state.request.site->cat){
+	  cats += cat.val+ "-";
+	}
+      }else if(state.request.app !=NULL){
+	for(auto cat : state.request.app->cat){
+	  cats += cat.val+ "-";
+	}
+      }
+      state.narrowConfigs(impl.filter(cats));
+    }
+
+private:
+    typedef RegexFilter<boost::regex, std::string> BaseFilter;
+    IncludeExcludeFilter<BaseFilter> impl;
+};
+
+/******************************************************************************/
 /* AUDIENCEID FILTER                                                          */
 /******************************************************************************/
 //only needed for opera requests. Similar to dealid but sent inside toplevel request
