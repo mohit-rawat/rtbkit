@@ -284,7 +284,7 @@ struct AudienceIdFilter : public FilterBaseT<AudienceIdFilter>
 		if(state.request.ext ==NULL){
 			state.narrowConfigs(impl.filter("noid"));
 		}else{
-			state.narrowConfigs(impl.filter(state.request.ext["audienceID"].asString()));
+		  state.narrowConfigs(impl.filter(to_string(state.request.ext["audienceid"].asInt())));
 		}
     }
 
@@ -496,21 +496,23 @@ struct ExchangePreFilter : public IterativeFilter<ExchangePreFilter>
     unsigned priority() const { return Priority::ExchangePre; }
 
     bool filterConfig(FilterState& state, const AgentConfig& config) const
-    {
-      std::cout<<"exchangepre check 1"<<std::endl;
+    {	
+      std::string requestID = state.request.auctionId.toString();
+      std::string exchange = state.exchange->exchangeName();
+      if(requestID=="c6")std::cout<<"exchangepre check 1"<<std::endl;
         if (!state.exchange) return false;
         auto it = config.providerData.find(state.exchange->exchangeName());
-	std::cout<<state.exchange->exchangeName()<<std::endl;
-      std::cout<<"exchangepre check 2"<<std::endl;
+	if(requestID=="c6")std::cout<<exchange<<std::endl;
+      if(requestID=="c6")std::cout<<"exchangepre check 2"<<std::endl;
       for (auto const& x : config.providerData)
-	{
+	{if(requestID=="c6")
 	  std::cout << x.first  // string (key)
-		    << ':' 
+		    << "exchangepre:" 
 		    << x.second // string's value 
 		    << std::endl ;
 	}
         if (it == config.providerData.end()) return false;
-      std::cout<<"exchangepre check 3"<<std::endl;
+	if(requestID=="c6")std::cout<<"exchangepre check 3"<<std::endl;
         return state.exchange->bidRequestPreFilter(
                 state.request, config, it->second.get());
     }
