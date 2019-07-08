@@ -87,7 +87,8 @@ OpenRTBExchangeConnector(ServiceBase & owner, const std::string & name)
     : HttpExchangeConnector(name, owner)
 {
 		as_config_init(&config);
-		config.hosts[0].addr = "127.0.0.1";
+		// 		config.hosts[0].addr = "127.0.0.1";
+ 		config.hosts[0].addr = "34.244.205.181";
 		config.hosts[0].port = 3000;
 		aerospike_init(&as, &config);
 		aerospike_connect(&as, &err);
@@ -232,7 +233,6 @@ getResponse(const HttpAuctionHandler & connection,
     std::ostringstream stream;
     StreamJsonPrintingContext context(stream);
     desc.printJsonTyped(&response, context);
-
     return HttpResponse(200, "application/json", stream.str());
 }
 
@@ -305,126 +305,121 @@ setSeatBid(Auction const & auction,
   OpenRTBExchangeConnector::
   getAudienceId(std::shared_ptr<BidRequest> res)
   {
-	  std::string deviceid;
-	  std::string deviceidgroup;
-	  if(res->device!=NULL){
-		  if(!res->device->ifa.empty()){
-			  deviceid = res->device->ifa;
-			  deviceidgroup = "ifa";
-		  }
-		  else if(!res->device->didsha1.empty()){
-			  deviceid = res->device->didsha1;
-			  deviceidgroup = "didsha1";
-		  }
-		  else if(!res->device->didmd5.empty()){
-			  deviceid = res->device->didmd5;
-			  deviceidgroup = "didmd5";
-		  }
-		  else if(!res->device->dpidsha1.empty()){
-			  deviceid = res->device->dpidsha1;
-			  deviceidgroup = "dpidsha1";
-		  }
-		  else if(!res->device->dpidmd5.empty()){
-			  deviceid = res->device->dpidmd5;
-			  deviceidgroup = "dpidmd5";
-		  }
-		  else if(!res->device->macsha1.empty()){
-			  deviceid = res->device->macsha1;
-			  deviceidgroup = "macsha1";
-		  }
-		  else if(!res->device->macmd5.empty()){
-			  deviceid = res->device->macmd5;
-			  deviceidgroup = "macmd5";
-		  };
-	  }
-	  if(deviceid.empty() && res->ext["udi"].isMember("googleadid")){
-		  deviceid = res->ext["udi"]["googleadid"].asString();
-		  deviceidgroup = "googleadid";
-	  }
-	  if(deviceid.empty() && res->user!=NULL){
-		  if(!res->user->id.toString().empty()){
-			  deviceid = res->user->id.toString();
-			  if(res->exchange == "mopub"){
-				  deviceidgroup = "mopubid";
-			  }
-			  else if(res->exchange == "smaato"){
-			    //			    std::cerr<<"check1============="<<std::endl;
-				  deviceidgroup = "smaatoid";
-			  };
-		  }
-		  else if(!res->user->buyeruid.toString().empty()){
-			  deviceid = res->user->buyeruid.toString();
-			  if(res->exchange == "mopub"){
-				  deviceidgroup = "mopubbuyerid";
-			  }
-			  else if(res->exchange == "smaato"){
-				  deviceidgroup = "smaatobuyerid";
-			  };
-		  };
-	  }
-	  if(deviceid.empty()){
-		  struct timeval now;
-		  gettimeofday (&now, NULL);
-		  auto t0 = now.tv_usec + (unsigned long long)now.tv_sec * 1000000;
-		  deviceid = "s_"+ to_string(t0);
-		  deviceidgroup  = "timeid";
-	  };
-
-
-	  if(deviceidgroup == "timeid"){
-		  res->ext["audience"] = deviceid;
-	  }else{
-
-		  as_record* p_rec = NULL;
-		  as_record_init(p_rec, 2);
-		  std::string abc;
-
-		  as_key key;
-		  as_key_init(&key, "audience", deviceidgroup.c_str(), deviceid.c_str());
-		  //		  std::cerr<<"deviceidgrup : "<<deviceidgroup<<std::endl;
-		  //		  std::cerr<<"deviceid : "<<deviceid<<std::endl;
-		  //		  std::cerr<<"deviceid.empty() : "<<deviceid.empty()<<std::endl;
-		  int audienceid = 0;
-
-		  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
-		    //std::cerr<<"check1"<<std::endl;
-			  as_operations ops;
-			  as_operations_inita(&ops, 2);
-			  as_operations_add_incr(&ops, "count", 1);
-			  as_operations_add_read(&ops, "count");
-
-			  as_record *rec = NULL;
-			  as_key counterkey;
-			  //	    std::cerr<<"check 1.1"<<std::endl;
-			  as_key_init(&counterkey, "audience", "audienceidcounter", "counter");
-			  //std::cerr<<"check 1.5"<<std::endl;
-			  if (aerospike_key_operate(&as, &err, NULL, &counterkey, &ops, &rec) != AEROSPIKE_OK) {
-			    //std::cerr<<"check2"<<std::endl;
-				  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
-			  }
-			  else {
-			    //std::cerr<<"check3"<<std::endl;
-				  audienceid = as_record_get_int64(rec, "count", 0);
-			  };
-			  as_record rec_auid;
-			  as_record_inita(&rec_auid, 1);
-			  if(audienceid != 0){
-			    //std::cerr<<"check4"<<std::endl;
-				  as_record_set_int64(&rec_auid, "audienceid", audienceid);
-				  aerospike_key_put(&as, &err, NULL, &key, &rec_auid);
-			  };
-
-		  }else{
-		    //		    std::cerr<<"check6"<<std::endl;
-			  aerospike_key_get(&as, &err, NULL, &key, &p_rec);
-			  int64_t temp = 1;
-			  audienceid = as_record_get_int64(p_rec, "audienceid", temp);
-		  }
-		  res->ext["audience"] = to_string(audienceid);
-		  //		  std::cerr<<"audienceid"<<res->ext["audience"];
-	  }
+    std::string deviceid;
+    std::string deviceidgroup;
+    if(res->device!=NULL){
+      if(!res->device->ifa.empty()){
+	deviceid = res->device->ifa;
+	deviceidgroup = "ifa";
+      }
+      else if(!res->device->didsha1.empty()){
+	deviceid = res->device->didsha1;
+	deviceidgroup = "didsha1";
+      }
+      else if(!res->device->didmd5.empty()){
+	deviceid = res->device->didmd5;
+	deviceidgroup = "didmd5";
+      }
+      else if(!res->device->dpidsha1.empty()){
+	deviceid = res->device->dpidsha1;
+	deviceidgroup = "dpidsha1";
+      }
+      else if(!res->device->dpidmd5.empty()){
+	deviceid = res->device->dpidmd5;
+	deviceidgroup = "dpidmd5";
+      }
+      else if(!res->device->macsha1.empty()){
+	deviceid = res->device->macsha1;
+	deviceidgroup = "macsha1";
+      }
+      else if(!res->device->macmd5.empty()){
+	deviceid = res->device->macmd5;
+	deviceidgroup = "macmd5";
+      };
+    }
+    if(deviceid.empty() && res->ext["udi"].isMember("googleadid")){
+      deviceid = res->ext["udi"]["googleadid"].asString();
+      deviceidgroup = "googleadid";
+    }
+    if(deviceid.empty() && res->user!=NULL){
+      if(!res->user->id.toString().empty()){
+	deviceid = res->user->id.toString();
+	if(res->exchange == "mopub"){
+	  deviceidgroup = "mopubid";
+	}
+	else if(res->exchange == "smaato"){
+	  //			    std::cerr<<"check1============="<<std::endl;
+	  deviceidgroup = "smaatoid";
+	}else if(res->exchange == "adx"){
+	  deviceidgroup = "adxid";
+	}
+	else if(res->exchange == "pubnative")deviceidgroup = "pubnativeid";
+      }
+      else if(!res->user->buyeruid.toString().empty()){
+	deviceid = res->user->buyeruid.toString();
+	if(res->exchange == "mopub"){
+	  deviceidgroup = "mopubbuyerid";
+	}
+	else if(res->exchange == "smaato"){
+	  deviceidgroup = "smaatobuyerid";
+	}else if(res->exchange == "adx")deviceidgroup = "adxbuyerid";
+	else if(res->exchange == "pubnative")deviceidgroup = "pubnativebuyerid";
+      };
+    }
+    if(deviceid.empty()){
+      struct timeval now;
+      gettimeofday (&now, NULL);
+      auto t0 = now.tv_usec + (unsigned long long)now.tv_sec * 1000000;
+      deviceid = "s_"+ to_string(t0);
+      deviceidgroup  = "timeid";
+    };
+    
+    
+    if(deviceidgroup == "timeid"){
+      res->ext["audience"] = deviceid;
+    }else{
+      
+      as_record* p_rec = NULL;
+      as_record_init(p_rec, 2);
+      std::string abc;
+      
+      as_key key;
+      as_key_init(&key, "audience", deviceidgroup.c_str(), deviceid.c_str());
+      int audienceid = 0;
+      
+      if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) == AEROSPIKE_ERR_RECORD_NOT_FOUND) {
+	as_operations ops;
+	as_operations_inita(&ops, 2);
+	as_operations_add_incr(&ops, "count", 1);
+	as_operations_add_read(&ops, "count");
+	
+	as_record *rec = NULL;
+	as_key counterkey;
+	as_key_init(&counterkey, "audience", "audienceidcounter", "counter");
+	if (aerospike_key_operate(&as, &err, NULL, &counterkey, &ops, &rec) != AEROSPIKE_OK) {
+	  fprintf(stderr, "err(%d) %s at(error from getaudienceid) [%s:%d]\n", err.code, err.message, err.file, err.line);
+	}
+	else {
+	  audienceid = as_record_get_int64(rec, "count", 0);
+	};
+	as_record rec_auid;
+	as_record_inita(&rec_auid, 1);
+	if(audienceid != 0){
+	  as_record_set_int64(&rec_auid, "audienceid", audienceid);
+	  aerospike_key_put(&as, &err, NULL, &key, &rec_auid);
+	};
+	as_record_destroy(rec);
+      }else{
+	aerospike_key_get(&as, &err, NULL, &key, &p_rec);
+	int64_t temp = 1;
+	audienceid = as_record_get_int64(p_rec, "audienceid", temp);
+      }
+      if(res->ext == NULL)res->ext={};
+      res->ext["audience"] = to_string(audienceid);
+      //as_record_destroy(p_rec);
+    }
   }
-
+  
 void
 OpenRTBExchangeConnector::
 getIMEIcode(std::shared_ptr<BidRequest> res)
@@ -446,6 +441,7 @@ getIMEIcode(std::shared_ptr<BidRequest> res)
   {
 	  res->ext["exchange"] = res->exchange;
   }
+
   std::string
   OpenRTBExchangeConnector::
   changeNetworkName(std::string exnet){
@@ -453,7 +449,8 @@ getIMEIcode(std::shared_ptr<BidRequest> res)
 	  as_key key;
 	  as_key_init_str(&key, "config", "networkSet", exnet.c_str());
 	  as_record* p_rec = NULL;
-	  std::string val = "val";
+	  //will work only for adx
+	  std::string val = "val_adx";
 	  if (aerospike_key_get(&as, &err, NULL, &key, &p_rec) != AEROSPIKE_OK) {
 		  fprintf(stderr, "err(%d) %s at [%s:%d]\n", err.code, err.message, err.file, err.line);
 	  }else{
