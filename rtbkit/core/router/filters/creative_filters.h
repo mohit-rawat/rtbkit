@@ -454,7 +454,7 @@ struct CreativeFormatFilter : public CreativeFilter<CreativeFormatFilter>
     {
         // The 0x0 format means: match anything.
         CreativeMatrix creatives = get(Format(0,0));
-
+	std::cout<<"formats :"<<imp.formats.toJsonStr()<<std::endl;
         for (const auto& format : imp.formats)
             creatives |= get(format);
 
@@ -751,28 +751,28 @@ struct CreativePMPFilter : public IterativeCreativeFilter<CreativePMPFilter>
       if(spot.pmp){
 	for(auto deal: spot.pmp->deals){
           if(config.dealID == deal.id.toString()){
-	    std::cout<<"pmp filter check 1"<<std::endl;
+	    //	    std::cout<<"pmp filter check 1"<<std::endl;
             return true;
           }else{
             continue;
           }
         }
-	std::cout<<"pmp filter check 2"<<std::endl;
+	//	std::cout<<"pmp filter check 2"<<std::endl;
 	return false;
       }else{
-	std::cout<<"pmp filter check 3"<<std::endl;
+	//	std::cout<<"pmp filter check 3"<<std::endl;
 	return false;
       }
     }else if(spot.pmp){
       if(spot.pmp->privateAuction.val == 1){
-	std::cout<<"pmp filter check 4"<<std::endl;
+	//	std::cout<<"pmp filter check 4"<<std::endl;
 	return false;
       }else{
-	std::cout<<"pmp filter check 5"<<std::endl;
+	//	std::cout<<"pmp filter check 5"<<std::endl;
 	return true;
       }
     }else{
-      std::cout<<"pmp filter check 6"<<std::endl;
+      //      std::cout<<"pmp filter check 6"<<std::endl;
       return true;
     }
   }
