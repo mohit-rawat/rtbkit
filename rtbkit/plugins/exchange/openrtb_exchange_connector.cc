@@ -410,13 +410,13 @@ setSeatBid(Auction const & auction,
 	};
 	as_record_destroy(rec);
       }else{
-	aerospike_key_get(&as, &err, NULL, &key, &p_rec);
+	//	aerospike_key_get(&as, &err, NULL, &key, &p_rec);
 	int64_t temp = 1;
 	audienceid = as_record_get_int64(p_rec, "audienceid", temp);
       }
       if(res->ext == NULL)res->ext={};
       res->ext["audience"] = to_string(audienceid);
-      //as_record_destroy(p_rec);
+      as_record_destroy(p_rec);
     }
   }
   
