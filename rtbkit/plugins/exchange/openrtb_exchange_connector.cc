@@ -10,6 +10,7 @@
 #include "rtbkit/plugins/bid_request/openrtb_bid_request_parser.h"
 #include "rtbkit/plugins/exchange/http_auction_handler.h"
 #include "rtbkit/core/agent_configuration/agent_config.h"
+#include "rtbkit/common/bid_request.h"
 #include "rtbkit/openrtb/openrtb_parsing.h"
 #include "soa/types/json_printing.h"
 #include <boost/any.hpp>
@@ -458,6 +459,28 @@ getIMEIcode(std::shared_ptr<BidRequest> res)
 	  }
 	  as_record_destroy(p_rec);
 	  return newnet;
+  }
+  
+  void
+  OpenRTBExchangeConnector::
+  addBannerFormats(std::shared_ptr<BidRequest> request)
+  {
+   	//to include all formats from banner object in imp.formats
+	//get the formats from banner object
+	//convert to string of form wxh - refer fromString
+	//create format object and push to imp.formats
+    //    for(auto imp :request->imp){
+    for(int i=0; i<request->imp.size(); i++){
+      //      RTBKIT::FormatSet formats = imp.formats;
+      if(request->imp[i].banner){
+	for(auto bannerFormat : request->imp[i].banner->format){
+	  std::string formatString = to_string(bannerFormat.w.val)+"x"+to_string(bannerFormat.h.val);
+	  RTBKIT::Format newFormat;
+	  newFormat.fromString(formatString);
+	  request->imp[i].formats.push_back(newFormat);
+	}
+      }
+    }
   }
 
 } // namespace RTBKIT

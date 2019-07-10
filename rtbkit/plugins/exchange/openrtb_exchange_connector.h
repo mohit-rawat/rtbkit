@@ -70,6 +70,8 @@ struct OpenRTBExchangeConnector : public HttpExchangeConnector {
 
 	std::string changeNetworkName(std::string exnet);
 
+	void addBannerFormats(std::shared_ptr<BidRequest> request);
+
 private:
 
     virtual Json::Value
